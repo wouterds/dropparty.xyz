@@ -1,0 +1,56 @@
+{% extends '_base.html.twig' %}
+
+{% block title %}{{ file.name }} - {{ app.env.APP_NAME }}{% endblock %}
+{% block extra_meta %}
+    <!-- twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ file.name }}">
+    <meta name="twitter:image" content="{{ app.env.APP_URL }}/direct/{{ file.id }}">
+    <meta name="twitter:url" content="{{ app.env.APP_URL }}/view/{{ file.id }}">
+
+    <!-- opengraph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ file.name }}">
+    <meta property="og:url" content="{{ app.env.APP_URL }}/view/{{ file.id }}">
+    <meta property="og:image" content="{{ app.env.APP_URL }}/direct/{{ file.id }}">
+{% endblock %}
+
+{% block header %}
+    <header class="component-header">
+        <div class="component-header__container container-fluid">
+            <div class="component-header__content">
+                <h1 class="component-header__title"><a href="/">Drop Party</a></h1>
+
+                <div class="component-header__items">
+                    <span class="component-header__items__title component-header__items__title--file-name">File:</span>
+                    <span class="component-header__items__value component-header__items__value--file-name">{{ file.name }}</span>
+
+                    <span class="component-header__items__title component-header__items__title--content-type">Content-Type:</span>
+                    <span class="component-header__items__value component-header__items__value--content-type">{{ file.contentType }}</span>
+
+                    <span class="component-header__items__title component-header__items__title--file-size">Size:</span>
+                    <span class="component-header__items__value component-header__items__value--file-size">{{  file.size|readable_filesize }}</span>
+                </div>
+                <div class="component-header__actions">
+                    <a href="/direct/{{ file.id }}" target="_blank" class="component-header__button">Direct</a>
+                    <a href="/download/{{ file.id }}" target="_blank" class="component-header__button">Download</a>
+                </div>
+            </div>
+        </div>
+    </header>
+{% endblock %}
+
+{% block body %}
+    {% if 'image/' in file.contentType %}
+        <div class="preview-container">
+            <img class="preview-image" src="/direct/{{ file.id }}" alt="Preview {{ file.name }}">
+        </div>
+    {% else %}
+        <h2>Preview not available</h2>
+        <p>
+            A preview for this type of file is currently not available but might be added in the future.
+            <br>
+            View the file <a href="/direct/{{ file.id }}" target="_blank">directly in your browser</a> or <a href="/download/{{ file.id }}" target="_blank">download from here</a>.
+        </p>
+    {% endif %}
+{% endblock %}

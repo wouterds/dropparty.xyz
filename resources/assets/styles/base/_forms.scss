@@ -1,0 +1,29 @@
+.label {
+  font-weight: 700;
+  font-size: 0.8em;
+  display: block;
+  line-height: normal;
+}
+
+.input {
+  outline: 0;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid #d3d3d3;
+  font-size: 0.9em;
+  padding: 10px 0;
+  width: 100%;
+  max-width: 400px;
+  color: #4c4c4c;
+  font-family: inherit;
+  font-weight: 700;
+  caret-color: #ff3a51;
+
+  &:focus {
+    border-color: #ff3a51;
+  }
+}
+
+.input-wrapper {
+  padding: 10px 0 15px;
+}

@@ -1,0 +1,16 @@
+<footer class="component-footer">
+    <div class="component-footer__conainer container-fluid">
+        &copy; {{ 'now'|date('Y') }} <a href="{{ app.env.APP_URL }}">{{ app.env.APP_URL }}</a>
+
+        <div class="component-footer__generated">
+            Page was generated in
+            {% if app.monitor.getReport().getElapsedTime().getValue() > 1000 %}
+                {{ app.monitor.getReport().getElapsedTime().inSeconds() }} s
+            {% else %}
+                {{ app.monitor.getReport().getElapsedTime().inMilliseconds() }} ms
+            {% endif %}
+            using
+            {{ app.monitor.getReport().getUsedMemory().inMB() }} MB
+        </div>
+    </div>
+</footer>

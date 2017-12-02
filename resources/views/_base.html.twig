@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% block head %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        {% block extra_meta %}{% endblock %}
+        <title>{% block title %}{{ app.env.APP_NAME }}{% endblock %}</title>
+        <link rel="stylesheet" href="/static/css/app.css?v={{ app.env.APP_VERSION_NUMBER }}">
+        <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    {% endblock %}
+</head>
+<body>
+    <div id="wrapper">
+        <div class="inner">
+            {% block header %}
+                {% include 'components/header.html.twig' %}
+            {% endblock %}
+
+            <main role="main" class="main">
+                <div class="container-fluid">
+                    <div class="content-wrapper">
+                        {% block body %}
+                            Hello World!
+                        {% endblock %}
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        {% include 'components/footer.html.twig' %}
+    </div>
+
+    <script src="/static/js/app.js?v={{ app.env.APP_VERSION_NUMBER }}"></script>
+</body>
+</html>

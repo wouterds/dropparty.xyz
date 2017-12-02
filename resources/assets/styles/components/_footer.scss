@@ -1,0 +1,31 @@
+$component: 'component-footer';
+
+$color-footer-text: rgba($color-tint-light-gray, 0.5);
+$color-footer-background: rgba($color-tint-light-gray, 0.025);
+
+.#{$component} {
+  @include clearfix;
+  height: $height-footer;
+  line-height: $height-footer;
+  font-size: 0.8em;
+  color: $color-footer-text;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  &__generated {
+    float: right;
+  }
+}
+
+@media only screen and (max-width: 560px) {
+  .#{$component} {
+    text-align: center;
+
+    &__generated {
+      display: none;
+    }
+  }
+}

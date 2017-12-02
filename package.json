@@ -1,0 +1,26 @@
+{
+  "name": "internal-dropparty-website",
+  "description": "Drop Party website",
+  "version": "1.0.0-alpha",
+  "author": "Wouter De Schuyter <wouter.de.schuyter@gmail.com>",
+  "scripts": {
+    "start": "./node_modules/.bin/webpack -w",
+    "build": "./node_modules/.bin/webpack -p"
+  },
+  "dependencies": {
+    "bootstrap-sass": "^3.3.7",
+    "jquery": "^3.2.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-function-bind": "^6.22.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.7",
+    "extract-text-webpack-plugin": "^3.0.1",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6",
+    "webpack": "^3.8.1"
+  }
+}

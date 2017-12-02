@@ -1,0 +1,31 @@
+{% extends '_base.html.twig' %}
+
+{% block header %}
+    <header class="component-header">
+        <div class="component-header__container container-fluid">
+            <div class="component-header__content">
+                <h1 class="component-header__title"><a href="/">Drop Party</a></h1>
+
+                <div class="component-header__actions">
+                    {% if app.request.getCookieParam('uid') %}
+                        <a href="/files" class="component-header__button">Files</a>
+                        <a href="/account" class="component-header__button">My Account</a>
+                    {% else %}
+                        <a href="/sign-in" class="component-header__button">Sign In</a>
+                        <a href="/sign-up" class="component-header__button">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+{% endblock %}
+
+{% block body %}
+    <h1>Drop Party</h1>
+    <p>Easy share files and screenshots using Drop Party!</p>
+
+    <h2>V0.0.1-alpha</h2>
+    <p>
+        There's a pre-alpha version available for API testing, <a href="https://goo.gl/trB73G" target="_blank">dropparty-0.0.1-alpha.dmg</a> (49.5 MB).
+    </p>
+{% endblock %}

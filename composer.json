@@ -1,0 +1,46 @@
+{
+  "name": "internal-dropparty-website",
+  "description": "Drop Party website",
+  "version": "1.0.0-alpha",
+  "authors": [
+    {
+      "name": "Wouter De Schuyter",
+      "email": "wouter.de.schuyter@gmail.com"
+    }
+  ],
+  "config": {
+    "sort-packages": true,
+    "optimize-autoloader": true
+  },
+  "scripts": {
+    "migrations:migrate": "./vendor/bin/doctrine-migrations migrations:migrate --no-interaction",
+    "migrations:generate": "./vendor/bin/doctrine-migrations migrations:generate"
+  },
+  "autoload": {
+    "psr-4": {
+      "DropParty\\": "src",
+      "DropParty\\Migrations\\": "database/migrations",
+      "DropParty\\Tests\\": "tests"
+    }
+  },
+  "require": {
+    "doctrine/migrations": "^1.6",
+    "guzzlehttp/guzzle": "^6.3",
+    "hashids/hashids": "^2.0",
+    "jenssegers/lean": "^0.2.2",
+    "league/container": "^2.4",
+    "league/oauth2-client": "^2.2",
+    "ramsey/uuid": "^3.7",
+    "ramsey/uuid-doctrine": "^1.4",
+    "respect/validation": "^1.1",
+    "shrikeh/teapot": "^2.3",
+    "slim/slim": "^3.8",
+    "spe/filesize-extension-bundle": "^1.0",
+    "tracy/tracy": "^2.4",
+    "twig/twig": "^2.4",
+    "vlucas/phpdotenv": "^2.4"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^3.3"
+  }
+}

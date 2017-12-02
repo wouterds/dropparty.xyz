@@ -1,0 +1,58 @@
+{% extends '_base.html.twig' %}
+
+{% block header %}
+    <header class="component-header">
+        <div class="component-header__container container-fluid">
+            <div class="component-header__content">
+                <h1 class="component-header__title"><a href="/">Drop Party</a></h1>
+
+                <div class="component-header__actions">
+
+                    {% if app.request.getCookieParam('uid') %}
+                        <a href="/files" class="component-header__button">Files</a>
+                        <a href="/account" class="component-header__button">My Account</a>
+                    {% else %}
+                        <a href="/sign-in" class="component-header__button">Sign In</a>
+                        <a href="/sign-up" class="component-header__button">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+{% endblock %}
+
+{% block body %}
+    <div style="text-align: center;">
+        <br>
+
+        <h1>Sign In</h1>
+
+        <br>
+        <br>
+
+        {% if apiResponse == 'failed' %}
+            <p class="response">Something went wrong while trying to login, please try again later.</p>
+        {% endif %}
+
+        <form action="" method="post" style="text-align: left; width: 400px; margin: 0 auto;">
+            <div class="row">
+                <div class="col-sm-12 input-wrapper">
+                    <label class="label" for="inputEmail">Email</label>
+                    <input class="input" id="inputEmail" type="email" name="email">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 input-wrapper">
+                    <label class="label" for="inputPassword">Password</label>
+                    <input class="input" id="inputPassword" type="password" name="password">
+                </div>
+            </div>
+            <div class="row">
+                <br>
+                <div class="col-sm-12 input-wrapper" style="text-align: center;">
+                    <input class="button" type="submit" value="Sign In">
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

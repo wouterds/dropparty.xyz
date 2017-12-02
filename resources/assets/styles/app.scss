@@ -1,0 +1,90 @@
+// Base
+@import 'base/variables';
+@import 'base/reset';
+@import 'base/mixins';
+@import 'base/fonts';
+@import 'base/text';
+@import 'base/buttons';
+@import 'base/forms';
+
+// Bootstrap
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/variables';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/mixins';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/grid';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/responsive-utilities';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap/tables';
+
+// Components
+@import 'components/header';
+@import 'components/footer';
+
+// Sticky footer
+@include sticky-footer($height-footer, '.inner', '.main', '.component-footer');
+
+$color-content-wrapper-shadow: rgba($color-black, 0.05);
+
+html,
+body,
+#wrapper {
+  height: 100%;
+  min-height: 100%;
+}
+
+body {
+  position: relative;
+}
+
+a {
+  color: #ff3a51;
+  text-decoration: none;
+
+  &:hover {
+    color: #1C2D42;
+  }
+}
+
+#wrapper {
+  font-size: $font-default-size;
+  line-height: $font-default-line-height;
+  color: $color-text-default;
+}
+
+.inner {
+  background: $color-body-bg;
+
+  .main {
+    padding-top: 25px;
+    padding-bottom: 40px;
+  }
+
+  .content-wrapper {
+    h1 {
+      font-size: 2.4em;
+      line-height: normal;
+      margin-bottom: 15px;
+    }
+
+    h2 {
+      font-size: 1.8em;
+      margin-bottom: 10px;
+    }
+
+    p + h2 {
+      margin-top: 50px;
+    }
+
+    .preview-container {
+      text-align: center;
+    }
+
+    .preview-image {
+      max-width: 100%;
+      display: inline-block;
+      box-shadow: 0 0 15px rgba(#000, 0.1);
+    }
+  }
+
+  .response {
+    margin-bottom: 25px;
+  }
+}

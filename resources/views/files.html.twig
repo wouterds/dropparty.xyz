@@ -1,0 +1,44 @@
+{% extends '_base.html.twig' %}
+
+{% block header %}
+    <header class="component-header">
+        <div class="component-header__container container-fluid">
+            <div class="component-header__content">
+                <h1 class="component-header__title"><a href="/">Drop Party</a></h1>
+
+                <div class="component-header__actions">
+                    <a href="/files" class="component-header__button">Files</a>
+                    <a href="/account" class="component-header__button">My Account</a>
+                </div>
+            </div>
+        </div>
+    </header>
+{% endblock %}
+
+{% block body %}
+    <h1>My Files ({{ apiResponse.data|length }})</h1>
+    {% if apiResponse == 'failed' %}
+        <p class="response">Couldn't fetch files at this moment.</p>
+    {% endif %}
+
+    <table class="table" data-id="table-files">
+        <tr>
+            <th scope="col" style="max-width: 450px;">File</th>
+            <th scope="col">Content-Type</th>
+            <th scope="col">Size</th>
+            <th scope="col">Md5 Checksum</th>
+            <th scope="col">Uploaded At</th>
+            <th scope="col">Actions</th>
+        </tr>
+        {% for file in apiResponse.data %}
+            <tr>
+                <td style="max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ file.name }}</td>
+                <td>{{ file.contentType }}</td>
+                <td>{{ file.size|readable_filesize }}</td>
+                <td>{{ file.md5 }}</td>
+                <td>{{ file.createdAt|date('Y-m-d g:i A') }}</td>
+                <td><a href="/view/{{ file.id }}">View</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

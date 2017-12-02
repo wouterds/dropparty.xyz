@@ -1,0 +1,46 @@
+version: '2'
+
+services:
+  nginx-web:
+    image: docker.wouterdeschuyter.be/internal-dropparty-website-nginx-web
+    restart: unless-stopped
+    env_file: docker-prod.env
+    environment:
+      - VIRTUAL_HOST=dropparty.xyz
+      - LETSENCRYPT_HOST=dropparty.xyz
+      - LETSENCRYPT_EMAIL=wouter@wouterdeschuyter.be
+    networks:
+      - default
+      - nginxproxy_default
+
+  nginx-api:
+    image: docker.wouterdeschuyter.be/internal-dropparty-website-nginx-api
+    restart: unless-stopped
+    env_file: docker-prod.env
+    environment:
+      - VIRTUAL_HOST=api.dropparty.xyz
+      - LETSENCRYPT_HOST=api.dropparty.xyz
+      - LETSENCRYPT_EMAIL=wouter@wouterdeschuyter.be
+    networks:
+      - default
+      - nginxproxy_default
+
+  php-fpm:
+    image: docker.wouterdeschuyter.be/internal-dropparty-website-php-fpm
+    restart: unless-stopped
+    env_file: docker-prod.env
+    volumes:
+      - ./docker-prod.env:/code/.env:ro
+      - ./logs:/code/storage/logs
+      - ./files:/code/storage/files
+    external_links:
+      - mariadb
+    networks:
+      - default
+      - databaseserver_default
+
+networks:
+  databaseserver_default:
+    external: true
+  nginxproxy_default:
+    external: true

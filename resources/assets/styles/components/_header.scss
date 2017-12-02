@@ -1,0 +1,111 @@
+$component: 'component-header';
+
+.#{$component} {
+  border-bottom: 1px solid #eee;
+  height: 60px;
+  padding: 17px 0;
+  overflow: hidden;
+
+  &__content {
+    font-weight: 600;
+    font-size: 0.9em;
+  }
+
+  &__title {
+    text-transform: uppercase;
+    font-size: 1.4em;
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+    word-spacing: 0.1em;
+    display: inline-block;
+    font-weight: 700;
+    float: left;
+    position: relative;
+
+    a {
+      color: #4A4A4A;
+      display: block;
+      width: 100%;
+    }
+  }
+
+  &__items {
+    float: left;
+    display: inline-block;
+    margin-left: 25px;
+    border-left: 1px solid #eee;
+    padding-left: 25px;
+    position: absolute;
+    top: 0;
+    height: 60px;
+    line-height: 60px;
+
+    &__title {
+      color: $color-text-heading-default;
+      padding-right: 2px;
+    }
+
+    &__value {
+      color: $color-text-default;
+      padding-right: 20px;
+    }
+  }
+
+  &__actions {
+    float: right;
+    display: inline-block;
+    text-align: right;
+  }
+
+  &__button {
+    color: #ff3a51;
+    border: 1px solid #ff3a51;
+    padding: 6px 18px;
+    border-radius: 15px;
+    font-weight: 600;
+    font-size: 0.9em;
+    outline: 0;
+    text-decoration: none;
+    margin-left: 15px;
+    transition: 100ms ease-in-out background, 100ms ease-in-out color;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background: #ff3a51;
+      color: #fff;
+    }
+  }
+}
+
+@media only screen and (max-width: 960px) {
+  .#{$component} {
+    &__items {
+      &__title,
+      &__value {
+        &--content-type,
+        &--file-size {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 560px) {
+  .#{$component} {
+    &__actions {
+      display: none;
+    }
+
+    &__title {
+      display: none;
+    }
+
+    &__items {
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+  }
+}
