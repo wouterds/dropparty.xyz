@@ -22,3 +22,7 @@ $app->group('/files', function () use ($app) {
     $app->post('.add', ApiFilesAddHandler::class)->setName('api.files.add');
     $app->post('.access-log.add', ApiFilesAddAccessLogHandler::class)->setName('api.files.add');
 });
+
+$app->group('/dropbox/tokens', function () use ($app) {
+    $app->post('.add', ApiDropboxTokensAddHandler::class)->setName('api.dropbox.tokens.add');
+});
