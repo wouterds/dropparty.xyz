@@ -20,7 +20,7 @@ class Application extends App
         $app = $this;
         $request = $app->getContainer()->get(Request::class);
 
-        if (stripos(getenv('APP_API_URL'), $request->getUri()->getHost()) !== false) {
+        if (stripos($request->getUri()->getHost(), 'api') !== false) {
             require __DIR__ . '/routes-api.php';
             return;
         }
