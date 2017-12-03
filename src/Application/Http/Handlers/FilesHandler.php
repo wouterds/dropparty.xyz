@@ -2,13 +2,11 @@
 
 namespace DropParty\Application\Http\Handlers;
 
-use DropParty\Application\ApiClient\DropPartyClient;
 use DropParty\Domain\Files\FileRepository;
 use DropParty\Domain\Users\UserId;
 use DropParty\Infrastructure\ApplicationMonitor\ApplicationMonitor;
 use DropParty\Infrastructure\Http\Handlers\AbstractViewHandler;
 use DropParty\Infrastructure\View\Twig;
-use Exception;
 use Slim\Http\Request;
 use Slim\Http\Response;
 

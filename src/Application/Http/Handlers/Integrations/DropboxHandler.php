@@ -2,7 +2,6 @@
 
 namespace DropParty\Application\Http\Handlers\Integrations;
 
-use DropParty\Application\ApiClient\DropPartyClient;
 use DropParty\Application\Oauth\DropboxOauthProvider;
 use DropParty\Domain\Dropbox\Token;
 use DropParty\Domain\Dropbox\TokenRepository;

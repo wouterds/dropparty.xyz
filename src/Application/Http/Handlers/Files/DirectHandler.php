@@ -2,12 +2,9 @@
 
 namespace DropParty\Application\Http\Handlers\Files;
 
-use DropParty\Application\ApiClient\DropPartyClient;
-use DropParty\Domain\Files\FileAccessLog;
 use DropParty\Domain\Files\FileAccessLogRepository;
 use DropParty\Domain\Files\FileId;
 use DropParty\Domain\Files\FileRepository;
-use Exception;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Stream;
