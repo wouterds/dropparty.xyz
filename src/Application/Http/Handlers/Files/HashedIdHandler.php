@@ -2,23 +2,23 @@
 
 namespace DropParty\Application\Http\Handlers\Files;
 
-use DropParty\Application\ApiClient\DropPartyClient;
+use DropParty\Domain\Files\FileHashidRepository;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class HashedIdHandler
 {
     /**
-     * @var DropPartyClient
+     * @var FileHashidRepository
      */
-    private $dropPartyClient;
+    private $fileHashidRepository;
 
     /**
-     * @param DropPartyClient $dropPartyClient
+     * @param FileHashidRepository $fileHashidRepository
      */
-    public function __construct(DropPartyClient $dropPartyClient)
+    public function __construct(FileHashidRepository $fileHashidRepository)
     {
-        $this->dropPartyClient = $dropPartyClient;
+        $this->fileHashidRepository = $fileHashidRepository;
     }
 
     /**
@@ -29,24 +29,20 @@ class HashedIdHandler
      */
     public function __invoke(Request $request, Response $response, string $hashedId): Response
     {
-        $apiResponse = $this->dropPartyClient->get('/files.get', ['id' => $hashedId]);
+        $fileId = $this->fileHashidRepository->findFileIdByHashId($hashedId);
 
-        if ($apiResponse->getStatusCode() !== 200) {
+        if (empty($fileId)) {
             return $response->withStatus(400);
         }
 
-        $contents = json_decode((string) $apiResponse->getBody(), true);
-
-        $id = $contents['data']['id'];
-
         if (filter_var($request->getParam('direct'), FILTER_VALIDATE_BOOLEAN)) {
-            return $response->withRedirect('/direct/' . $id);
+            return $response->withRedirect('/direct/' . $fileId);
         }
 
         if (filter_var($request->getParam('download'), FILTER_VALIDATE_BOOLEAN)) {
-            return $response->withRedirect('/download/' . $id);
+            return $response->withRedirect('/download/' . $fileId);
         }
 
-        return $response->withRedirect('/view/' . $id);
+        return $response->withRedirect('/view/' . $fileId);
     }
 }
