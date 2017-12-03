@@ -1,6 +1,5 @@
 <?php
 
-use DropParty\Application\Http\Handlers\Api\Files\AddAccessLogHandler as ApiFilesAddAccessLogHandler;
 use DropParty\Application\Http\Handlers\Api\Files\AddHandler as ApiFilesAddHandler;
 use DropParty\Application\Http\Handlers\Api\Files\DownloadHandler as ApiFilesDownloadHandler;
 use DropParty\Application\Http\Handlers\Api\Files\GetHandler as ApiFilesGetHandler;
@@ -22,5 +21,4 @@ $app->group('/files', function () use ($app) {
     $app->get('.get', ApiFilesGetHandler::class)->setName('api.files.get');
     $app->get('.download', ApiFilesDownloadHandler::class)->setName('api.files.download')->add(FilesAccessLogsMiddleware::class);
     $app->post('.add', ApiFilesAddHandler::class)->setName('api.files.add');
-    $app->post('.access-log.add', ApiFilesAddAccessLogHandler::class)->setName('api.files.add');
 });
