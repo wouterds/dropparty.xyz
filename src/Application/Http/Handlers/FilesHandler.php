@@ -3,6 +3,8 @@
 namespace DropParty\Application\Http\Handlers;
 
 use DropParty\Application\ApiClient\DropPartyClient;
+use DropParty\Domain\Files\FileRepository;
+use DropParty\Domain\Users\UserId;
 use DropParty\Infrastructure\ApplicationMonitor\ApplicationMonitor;
 use DropParty\Infrastructure\Http\Handlers\AbstractViewHandler;
 use DropParty\Infrastructure\View\Twig;
@@ -13,20 +15,19 @@ use Slim\Http\Response;
 class FilesHandler extends AbstractViewHandler
 {
     /**
-     * @var DropPartyClient
+     * @var FileRepository
      */
-    private $dropPartyClient;
+    private $fileRepository;
 
     /**
      * @param Twig $twig
      * @param ApplicationMonitor $applicationMonitor
-     * @param DropPartyClient $dropPartyClient
+     * @param FileRepository $fileRepository
      */
-    public function __construct(Twig $twig, ApplicationMonitor $applicationMonitor, DropPartyClient $dropPartyClient)
+    public function __construct(Twig $twig, ApplicationMonitor $applicationMonitor, FileRepository $fileRepository)
     {
         parent::__construct($twig, $applicationMonitor);
-
-        $this->dropPartyClient = $dropPartyClient;
+        $this->fileRepository = $fileRepository;
     }
 
     /**
@@ -44,16 +45,9 @@ class FilesHandler extends AbstractViewHandler
      */
     public function __invoke(Request $request, Response $response): Response
     {
-        try {
-            $apiResponse = $this->dropPartyClient->get('/files.list', [
-                'uid' => $request->getCookieParam('uid'),
-            ]);
-        } catch (Exception $e) {
-            return $this->render($request, $response, ['apiResponse' => 'failed']);
-        }
+        $userId = new UserId($request->getCookieParam('uid'));
+        $files = $this->fileRepository->findByUserId($userId);
 
-        $apiResponse = json_decode((string) $apiResponse->getBody(), true);
-
-        return $this->render($request, $response, ['apiResponse' => $apiResponse]);
+        return $this->render($request, $response, ['files' => $files]);
     }
 }

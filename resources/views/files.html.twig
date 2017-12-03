@@ -16,10 +16,7 @@
 {% endblock %}
 
 {% block body %}
-    <h1>My Files ({{ apiResponse.data|length }})</h1>
-    {% if apiResponse == 'failed' %}
-        <p class="response">Couldn't fetch files at this moment.</p>
-    {% endif %}
+    <h1>My Files ({{ files|length }})</h1>
 
     <table class="table" data-id="table-files">
         <tr>
@@ -30,7 +27,7 @@
             <th scope="col">Uploaded At</th>
             <th scope="col">Actions</th>
         </tr>
-        {% for file in apiResponse.data %}
+        {% for file in files %}
             <tr>
                 <td style="max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ file.name }}</td>
                 <td>{{ file.contentType }}</td>
