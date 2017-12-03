@@ -4,6 +4,9 @@ namespace DropParty\Application\Http\Handlers\Integrations;
 
 use DropParty\Application\ApiClient\DropPartyClient;
 use DropParty\Application\Oauth\DropboxOauthProvider;
+use DropParty\Domain\Dropbox\Token;
+use DropParty\Domain\Dropbox\TokenRepository;
+use DropParty\Domain\Users\UserId;
 use Exception;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -16,18 +19,18 @@ class DropboxHandler
     private $oauthProvider;
 
     /**
-     * @var DropPartyClient
+     * @var TokenRepository
      */
-    private $dropPartyClient;
+    private $tokenRepository;
 
     /**
      * @param DropboxOauthProvider $dropboxOauthProvider
-     * @param DropPartyClient $dropPartyClient
+     * @param TokenRepository $tokenRepository
      */
-    public function __construct(DropboxOauthProvider $dropboxOauthProvider, DropPartyClient $dropPartyClient)
+    public function __construct(DropboxOauthProvider $dropboxOauthProvider, TokenRepository $tokenRepository)
     {
         $this->oauthProvider = $dropboxOauthProvider;
-        $this->dropPartyClient = $dropPartyClient;
+        $this->tokenRepository = $tokenRepository;
     }
 
     /**
@@ -50,10 +53,16 @@ class DropboxHandler
             'code' => $request->getQueryParam('code'),
         ]);
 
-        $this->dropPartyClient->post('/dropbox/tokens.add', [
-            'user_id' => $request->getCookieParam('uid'),
-            'access_token' => $accessToken->getToken(),
-        ]);
+        $token = new Token(
+            new UserId($request->getCookieParam('uid')),
+            $accessToken->getToken()
+        );
+
+        if ($this->tokenRepository->has($token)) {
+            $this->tokenRepository->update($token);
+        } else {
+            $this->tokenRepository->add($token);
+        }
 
         return $response->withRedirect('/account?integration-installed=dropbox');
     }
