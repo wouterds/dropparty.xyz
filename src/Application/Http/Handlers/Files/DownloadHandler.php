@@ -6,16 +6,18 @@ use DropParty\Application\ApiClient\DropPartyClient;
 use DropParty\Domain\Files\FileAccessLog;
 use DropParty\Domain\Files\FileAccessLogRepository;
 use DropParty\Domain\Files\FileId;
+use DropParty\Domain\Files\FileRepository;
 use Exception;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Slim\Http\Stream;
 
 class DownloadHandler
 {
     /**
-     * @var DropPartyClient
+     * @var FileRepository
      */
-    private $dropPartyClient;
+    private $fileRepository;
 
     /**
      * @var FileAccessLogRepository
@@ -23,12 +25,12 @@ class DownloadHandler
     private $fileAccessLogRepository;
 
     /**
-     * @param DropPartyClient $dropPartyClient
+     * @param FileRepository $fileRepository
      * @param FileAccessLogRepository $fileAccessLogRepository
      */
-    public function __construct(DropPartyClient $dropPartyClient, FileAccessLogRepository $fileAccessLogRepository)
+    public function __construct(FileRepository $fileRepository, FileAccessLogRepository $fileAccessLogRepository)
     {
-        $this->dropPartyClient = $dropPartyClient;
+        $this->fileRepository = $fileRepository;
         $this->fileAccessLogRepository = $fileAccessLogRepository;
     }
 
@@ -40,24 +42,10 @@ class DownloadHandler
      */
     public function __invoke(Request $request, Response $response, string $id): Response
     {
-        $apiResponse = $this->dropPartyClient->get('/files.get', ['id' => $id]);
         $fileId = new FileId($id);
+        $file = $this->fileRepository->find($fileId);
 
-        if ($apiResponse->getStatusCode() !== 200) {
-            return $response->withStatus(400);
-        }
-
-        $contents = json_decode((string) $apiResponse->getBody(), true);
-
-        if (empty($contents['data'])) {
-            return $response->withStatus(400);
-        }
-
-        $file = $contents['data'];
-
-        $apiResponse = $this->dropPartyClient->get('/files.download', ['id' => $id]);
-
-        if ($apiResponse->getStatusCode() !== 200) {
+        if (empty($file)) {
             return $response->withStatus(400);
         }
 
@@ -82,8 +70,8 @@ class DownloadHandler
         $response = $response->withHeader('Content-Disposition', 'attachment; filename=' . basename($file['name']));
         $response = $response->withHeader('Content-Transfer-Encoding', 'binary');
         $response = $response->withHeader('Connection', 'Keep-Alive');
-        $response = $response->withHeader('Content-Length', $apiResponse->getBody()->getSize());
-        $response = $response->withBody($apiResponse->getBody());
+        $response = $response->withHeader('Content-Length', $file->getSize());
+        $response = $response->withBody(new Stream(fopen($file->getPath(), 'r')));
 
         return $response;
     }

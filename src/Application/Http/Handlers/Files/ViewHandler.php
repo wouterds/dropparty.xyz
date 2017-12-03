@@ -2,7 +2,8 @@
 
 namespace DropParty\Application\Http\Handlers\Files;
 
-use DropParty\Application\ApiClient\DropPartyClient;
+use DropParty\Domain\Files\FileId;
+use DropParty\Domain\Files\FileRepository;
 use DropParty\Infrastructure\ApplicationMonitor\ApplicationMonitor;
 use DropParty\Infrastructure\Http\Handlers\AbstractViewHandler;
 use DropParty\Infrastructure\View\Twig;
@@ -12,19 +13,19 @@ use Slim\Http\Response;
 class ViewHandler extends AbstractViewHandler
 {
     /**
-     * @var DropPartyClient
+     * @var FileRepository
      */
-    private $dropPartyClient;
+    private $fileRepository;
 
     /**
      * @param Twig $twig
      * @param ApplicationMonitor $applicationMonitor
-     * @param DropPartyClient $dropPartyClient
+     * @param FileRepository $fileRepository
      */
-    public function __construct(Twig $twig, ApplicationMonitor $applicationMonitor, DropPartyClient $dropPartyClient)
+    public function __construct(Twig $twig, ApplicationMonitor $applicationMonitor, FileRepository $fileRepository)
     {
         parent::__construct($twig, $applicationMonitor);
-        $this->dropPartyClient = $dropPartyClient;
+        $this->fileRepository = $fileRepository;
     }
 
     /**
@@ -43,19 +44,12 @@ class ViewHandler extends AbstractViewHandler
      */
     public function __invoke(Request $request, Response $response, string $id): Response
     {
-        $apiResponse = $this->dropPartyClient->get('/files.get', ['id' => $id]);
+        $fileId = new FileId($id);
+        $file = $this->fileRepository->find($fileId);
 
-        if ($apiResponse->getStatusCode() !== 200) {
+        if (empty($file)) {
             return $response->withStatus(400);
         }
-
-        $contents = json_decode((string) $apiResponse->getBody(), true);
-
-        if (empty($contents['data'])) {
-            return $response->withStatus(400);
-        }
-
-        $file = $contents['data'];
 
         return $this->render($request, $response, ['file' => $file]);
     }
