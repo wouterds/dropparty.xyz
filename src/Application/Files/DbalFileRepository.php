@@ -65,9 +65,9 @@ class DbalFileRepository implements FileRepository
 
     /**
      * @param FileId $id
-     * @return File
+     * @return File|null
      */
-    public function find(FileId $id): File
+    public function find(FileId $id): ?File
     {
         $query = $this->connection->createQueryBuilder();
         $query->select('f.*, fhid.id AS hash_id_raw');

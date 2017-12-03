@@ -19,9 +19,9 @@ interface FileRepository
 
     /**
      * @param FileId $id
-     * @return File
+     * @return File|null
      */
-    public function find(FileId $id): File;
+    public function find(FileId $id): ?File;
 
     /**
      * @param UserId $id
