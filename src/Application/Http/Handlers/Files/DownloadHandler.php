@@ -3,6 +3,9 @@
 namespace DropParty\Application\Http\Handlers\Files;
 
 use DropParty\Application\ApiClient\DropPartyClient;
+use DropParty\Domain\Files\FileAccessLog;
+use DropParty\Domain\Files\FileAccessLogRepository;
+use DropParty\Domain\Files\FileId;
 use Exception;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -15,11 +18,18 @@ class DownloadHandler
     private $dropPartyClient;
 
     /**
-     * @param DropPartyClient $dropPartyClient
+     * @var FileAccessLogRepository
      */
-    public function __construct(DropPartyClient $dropPartyClient)
+    private $fileAccessLogRepository;
+
+    /**
+     * @param DropPartyClient $dropPartyClient
+     * @param FileAccessLogRepository $fileAccessLogRepository
+     */
+    public function __construct(DropPartyClient $dropPartyClient, FileAccessLogRepository $fileAccessLogRepository)
     {
         $this->dropPartyClient = $dropPartyClient;
+        $this->fileAccessLogRepository = $fileAccessLogRepository;
     }
 
     /**
@@ -31,6 +41,7 @@ class DownloadHandler
     public function __invoke(Request $request, Response $response, string $id): Response
     {
         $apiResponse = $this->dropPartyClient->get('/files.get', ['id' => $id]);
+        $fileId = new FileId($id);
 
         if ($apiResponse->getStatusCode() !== 200) {
             return $response->withStatus(400);
@@ -57,16 +68,14 @@ class DownloadHandler
         $userAgent = $request->getServerParam('HTTP_USER_AGENT');
         $referrer = $request->getServerParam('HTTP_REFERER');
 
-        try {
-            $this->dropPartyClient->post('/files.access-log.add', [
-                'file_id' => $id,
-                'ip' => $ip,
-                'user_agent' => $userAgent,
-                'referrer' => $referrer,
-            ]);
-        } catch (Exception $e) {
-            // TODO
-        }
+        $fileAccessLog = new FileAccessLog(
+            $fileId,
+            $ip,
+            !empty($userAgent) ? $userAgent : null,
+            !empty($referrer) ? $referrer : null
+        );
+
+        $this->fileAccessLogRepository->add($fileAccessLog);
 
         $response = $response->withHeader('Content-Description', 'File Transfer');
         $response = $response->withHeader('Content-Type', 'application/octet-stream');
