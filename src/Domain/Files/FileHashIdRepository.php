@@ -2,7 +2,7 @@
 
 namespace DropParty\Domain\Files;
 
-interface FileHashidRepository
+interface FileHashIdRepository
 {
     /**
      * @param FileId $id

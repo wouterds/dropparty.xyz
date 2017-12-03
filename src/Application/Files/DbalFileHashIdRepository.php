@@ -3,11 +3,11 @@
 namespace DropParty\Application\Files;
 
 use Doctrine\DBAL\Connection;
-use DropParty\Domain\Files\FileHashidRepository;
+use DropParty\Domain\Files\FileHashIdRepository;
 use DropParty\Domain\Files\FileId;
 use Hashids\Hashids;
 
-class DbalFileHashidRepository implements FileHashidRepository
+class DbalFileHashIdRepository implements FileHashIdRepository
 {
     public const TABLE = 'file_hash_id';
 

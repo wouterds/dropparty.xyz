@@ -3,7 +3,7 @@
 namespace DropParty\Application\Files;
 
 use DropParty\Domain\Files\FileAccessLogRepository;
-use DropParty\Domain\Files\FileHashidRepository;
+use DropParty\Domain\Files\FileHashIdRepository;
 use DropParty\Domain\Files\FileRepository;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
@@ -14,6 +14,8 @@ class ServiceProvider extends AbstractServiceProvider
      */
     protected $provides = [
         FileRepository::class,
+        FileHashIdRepository::class,
+        FileAccessLogRepository::class,
     ];
 
     /**
@@ -25,8 +27,8 @@ class ServiceProvider extends AbstractServiceProvider
             return $this->container->get(DbalFileRepository::class);
         });
 
-        $this->container->share(FileHashidRepository::class, function () {
-            return $this->container->get(DbalFileHashidRepository::class);
+        $this->container->share(FileHashIdRepository::class, function () {
+            return $this->container->get(DbalFileHashIdRepository::class);
         });
 
         $this->container->share(FileAccessLogRepository::class, function () {

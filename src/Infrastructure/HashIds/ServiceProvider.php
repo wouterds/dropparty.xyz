@@ -1,6 +1,6 @@
 <?php
 
-namespace DropParty\Infrastructure\Hashids;
+namespace DropParty\Infrastructure\HashIds;
 
 use Hashids\Hashids;
 use League\Container\ServiceProvider\AbstractServiceProvider;

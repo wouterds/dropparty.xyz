@@ -3,7 +3,7 @@
 namespace DropParty\Application\Http\Handlers\Api\Files;
 
 use DropParty\Domain\Files\File;
-use DropParty\Domain\Files\FileHashidRepository;
+use DropParty\Domain\Files\FileHashIdRepository;
 use DropParty\Domain\Files\FileRepository;
 use DropParty\Domain\Users\UserId;
 use DropParty\Domain\Users\UserRepository;
@@ -26,20 +26,20 @@ class AddHandler
     private $fileRepository;
 
     /**
-     * @var FileHashidRepository
+     * @var FileHashIdRepository
      */
-    private $fileHashidRepository;
+    private $fileHashIdRepository;
 
     /**
      * @param UserRepository $userRepository
      * @param FileRepository $fileRepository
-     * @param FileHashidRepository $fileHashidRepository
+     * @param FileHashIdRepository $fileHashIdRepository
      */
-    public function __construct(UserRepository $userRepository, FileRepository $fileRepository, FileHashidRepository $fileHashidRepository)
+    public function __construct(UserRepository $userRepository, FileRepository $fileRepository, FileHashIdRepository $fileHashIdRepository)
     {
         $this->userRepository = $userRepository;
         $this->fileRepository = $fileRepository;
-        $this->fileHashidRepository = $fileHashidRepository;
+        $this->fileHashIdRepository = $fileHashIdRepository;
     }
 
     /**
@@ -93,8 +93,8 @@ class AddHandler
 
         // Short link?
         if (filter_var($request->getParam('short'), FILTER_VALIDATE_BOOLEAN)) {
-            $this->fileHashidRepository->add($file->getId());
-            $hashId = $this->fileHashidRepository->findHashIdByFileId($file->getId());
+            $this->fileHashIdRepository->add($file->getId());
+            $hashId = $this->fileHashIdRepository->findHashIdByFileId($file->getId());
             $file->setHashId($hashId);
         }
 

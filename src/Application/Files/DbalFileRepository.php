@@ -72,7 +72,7 @@ class DbalFileRepository implements FileRepository
         $query = $this->connection->createQueryBuilder();
         $query->select('f.*, fhid.id AS hash_id_raw');
         $query->from(self::TABLE, 'f');
-        $query->leftJoin('f', DbalFileHashidRepository::TABLE, 'fhid', 'f.id = fhid.file_id');
+        $query->leftJoin('f', DbalFileHashIdRepository::TABLE, 'fhid', 'f.id = fhid.file_id');
         $query->where('f.id = ' . $query->createNamedParameter($id));
         $result = $query->execute()->fetch();
 
@@ -96,7 +96,7 @@ class DbalFileRepository implements FileRepository
         $query = $this->connection->createQueryBuilder();
         $query->select('f.*, fhid.id AS hash_id_raw');
         $query->from(self::TABLE, 'f');
-        $query->leftJoin('f', DbalFileHashidRepository::TABLE, 'fhid', 'f.id = fhid.file_id');
+        $query->leftJoin('f', DbalFileHashIdRepository::TABLE, 'fhid', 'f.id = fhid.file_id');
         $query->where('f.user_id = ' . $query->createNamedParameter($userId));
         $query->orderBy('f.created_at', 'desc');
         $result = $query->execute()->fetchAll();
