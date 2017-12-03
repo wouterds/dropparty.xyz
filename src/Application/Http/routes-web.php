@@ -15,6 +15,7 @@ use DropParty\Application\Http\Handlers\SignUpHandler;
 use DropParty\Application\Http\Handlers\SignUpPostHandler;
 
 $app->get('/', HomeHandler::class)->setName('home');
+
 $app->get('/sign-up', SignUpHandler::class)->setName('sign-up');
 $app->post('/sign-up', SignUpPostHandler::class);
 $app->get('/sign-in', SignInHandler::class)->setName('sign-in');

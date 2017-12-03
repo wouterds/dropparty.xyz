@@ -4,6 +4,7 @@ namespace DropParty\Application\Http;
 
 use DropParty\Application\Container;
 use Slim\App;
+use Slim\Http\Request;
 
 class Application extends App
 {
@@ -17,8 +18,13 @@ class Application extends App
     private function loadRoutes()
     {
         $app = $this;
+        $request = $app->getContainer()->get(Request::class);
 
-        require __DIR__ . '/routes-api.php';
+        if (stripos(getenv('APP_API_URL'), $request->getUri()->getHost()) !== false) {
+            require __DIR__ . '/routes-api.php';
+            return;
+        }
+
         require __DIR__ . '/routes-web.php';
     }
 }
