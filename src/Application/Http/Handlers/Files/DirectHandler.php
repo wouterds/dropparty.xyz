@@ -49,22 +49,6 @@ class DirectHandler
             return $response->withStatus(400);
         }
 
-        $ip = $request->getServerParam('REMOTE_ADDR');
-        if (!empty($request->getHeaderLine('CF-Connecting-IP'))) {
-            $ip = $request->getHeaderLine('CF-Connecting-IP');
-        }
-        $userAgent = $request->getServerParam('HTTP_USER_AGENT');
-        $referrer = $request->getServerParam('HTTP_REFERER');
-
-        $fileAccessLog = new FileAccessLog(
-            $fileId,
-            $ip,
-            !empty($userAgent) ? $userAgent : null,
-            !empty($referrer) ? $referrer : null
-        );
-
-        $this->fileAccessLogRepository->add($fileAccessLog);
-
         $response = $response->withHeader('Content-Type', $file->getContentType());
         $response = $response->withHeader('Content-Length', $file->getSize());
         $response = $response->withBody(new Stream(fopen($file->getPath(), 'r')));

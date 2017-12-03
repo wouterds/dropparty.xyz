@@ -13,6 +13,7 @@ use DropParty\Application\Http\Handlers\SignInPostHandler;
 use DropParty\Application\Http\Handlers\SignOutHandler;
 use DropParty\Application\Http\Handlers\SignUpHandler;
 use DropParty\Application\Http\Handlers\SignUpPostHandler;
+use DropParty\Application\Http\Middlewares\FilesAccessLogMiddleware;
 
 $app->get('/', HomeHandler::class)->setName('home');
 
@@ -27,6 +28,6 @@ $app->group('/integrations', function () use ($app) {
 });
 $app->get('/files', FilesHandler::class)->setName('files');
 $app->get('/view/{id}', FilesViewHandler::class)->setName('filesView');
-$app->get('/direct/{id}', FilesDirectHandler::class)->setName('filesDirect');
-$app->get('/download/{id}', FilesDownloadHandler::class)->setName('filesDownload');
+$app->get('/direct/{id}', FilesDirectHandler::class)->setName('filesDirect')->add(FilesAccessLogMiddleware::class);
+$app->get('/download/{id}', FilesDownloadHandler::class)->setName('filesDownload')->add(FilesAccessLogMiddleware::class);
 $app->get('/{hashedId}', HashedIdHandler::class);
