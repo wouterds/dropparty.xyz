@@ -29,6 +29,7 @@
     "hashids/hashids": "^2.0",
     "jenssegers/lean": "^0.2.2",
     "league/container": "^2.4",
+    "league/flysystem": "^1.0",
     "league/oauth2-client": "^2.2",
     "ramsey/uuid": "^3.7",
     "ramsey/uuid-doctrine": "^1.4",
