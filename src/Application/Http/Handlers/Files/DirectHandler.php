@@ -5,6 +5,7 @@ namespace DropParty\Application\Http\Handlers\Files;
 use DropParty\Domain\Files\FileAccessLogRepository;
 use DropParty\Domain\Files\FileId;
 use DropParty\Domain\Files\FileRepository;
+use League\Flysystem\Filesystem;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Stream;
@@ -22,13 +23,20 @@ class DirectHandler
     private $fileAccessLogRepository;
 
     /**
+     * @var Filesystem
+     */
+    private $filesystem;
+
+    /**
      * @param FileRepository $fileRepository
      * @param FileAccessLogRepository $fileAccessLogRepository
+     * @param Filesystem $filesystem
      */
-    public function __construct(FileRepository $fileRepository, FileAccessLogRepository $fileAccessLogRepository)
+    public function __construct(FileRepository $fileRepository, FileAccessLogRepository $fileAccessLogRepository, Filesystem $filesystem)
     {
         $this->fileRepository = $fileRepository;
         $this->fileAccessLogRepository = $fileAccessLogRepository;
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -48,7 +56,7 @@ class DirectHandler
 
         $response = $response->withHeader('Content-Type', $file->getContentType());
         $response = $response->withHeader('Content-Length', $file->getSize());
-        $response = $response->withBody(new Stream(fopen($file->getPath(), 'r')));
+        $response = $response->withBody(new Stream($this->filesystem->readStream($file->getPath())));
 
         return $response;
     }
