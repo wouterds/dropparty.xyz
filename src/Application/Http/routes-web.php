@@ -3,7 +3,7 @@
 use DropParty\Application\Http\Handlers\AccountHandler;
 use DropParty\Application\Http\Handlers\Files\DirectHandler as FilesDirectHandler;
 use DropParty\Application\Http\Handlers\Files\DownloadHandler as FilesDownloadHandler;
-use DropParty\Application\Http\Handlers\Files\HashedIdHandler;
+use DropParty\Application\Http\Handlers\Files\HashedIdHandler as FilesHashedIdHandler;
 use DropParty\Application\Http\Handlers\Files\ViewHandler as FilesViewHandler;
 use DropParty\Application\Http\Handlers\FilesHandler;
 use DropParty\Application\Http\Handlers\HomeHandler;
@@ -30,4 +30,4 @@ $app->get('/files', FilesHandler::class)->setName('files');
 $app->get('/view/{id}', FilesViewHandler::class)->setName('filesView');
 $app->get('/direct/{id}', FilesDirectHandler::class)->setName('filesDirect')->add(FilesAccessLogMiddleware::class);
 $app->get('/download/{id}', FilesDownloadHandler::class)->setName('filesDownload')->add(FilesAccessLogMiddleware::class);
-$app->get('/{hashedId}', HashedIdHandler::class);
+$app->get('/{hashedId}', FilesHashedIdHandler::class);
