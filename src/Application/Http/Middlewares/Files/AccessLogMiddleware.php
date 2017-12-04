@@ -1,6 +1,6 @@
 <?php
 
-namespace DropParty\Application\Http\Middlewares;
+namespace DropParty\Application\Http\Middlewares\Files;
 
 use DropParty\Application\Http\Handlers\Files\DirectHandler;
 use DropParty\Application\Http\Handlers\Files\DownloadHandler;
@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Http\Request;
 use Slim\Route;
 
-class FilesAccessLogMiddleware
+class AccessLogMiddleware
 {
     /**
      * @var FileRepository

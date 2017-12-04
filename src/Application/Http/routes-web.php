@@ -13,7 +13,7 @@ use DropParty\Application\Http\Handlers\SignInPostHandler;
 use DropParty\Application\Http\Handlers\SignOutHandler;
 use DropParty\Application\Http\Handlers\SignUpHandler;
 use DropParty\Application\Http\Handlers\SignUpPostHandler;
-use DropParty\Application\Http\Middlewares\FilesAccessLogMiddleware;
+use DropParty\Application\Http\Middlewares\Files\AccessLogMiddleware as FilesAccessLogMiddleware;
 
 $app->get('/', HomeHandler::class)->setName('home');
 
