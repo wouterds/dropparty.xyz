@@ -2,31 +2,34 @@
 
 namespace DropParty\Application\Http\Handlers;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use DropParty\Application\ApiClient\DropPartyClient;
+use DropParty\Domain\Users\User;
+use DropParty\Domain\Users\UserRepository;
 use DropParty\Infrastructure\ApplicationMonitor\ApplicationMonitor;
 use DropParty\Infrastructure\Http\Handlers\AbstractViewHandler;
 use DropParty\Infrastructure\View\Twig;
 use Exception;
+use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class SignUpPostHandler extends AbstractViewHandler
 {
     /**
-     * @var DropPartyClient
+     * @var UserRepository
      */
-    private $dropPartyClient;
+    private $userRepository;
 
     /**
      * @param Twig $twig
      * @param ApplicationMonitor $applicationMonitor
-     * @param DropPartyClient $dropPartyClient
+     * @param UserRepository $userRepository
      */
-    public function __construct(Twig $twig, ApplicationMonitor $applicationMonitor, DropPartyClient $dropPartyClient)
+    public function __construct(Twig $twig, ApplicationMonitor $applicationMonitor, UserRepository $userRepository)
     {
         parent::__construct($twig, $applicationMonitor);
-
-        $this->dropPartyClient = $dropPartyClient;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -45,15 +48,35 @@ class SignUpPostHandler extends AbstractViewHandler
     public function __invoke(Request $request, Response $response): Response
     {
         try {
-            $apiResponse = $this->dropPartyClient->post('/users.register', [
-                'email' => $request->getParam('email'),
-                'name' => $request->getParam('name'),
-                'password' => $request->getParam('password'),
-            ]);
+            $this->validate($request);
         } catch (Exception $e) {
-            return $this->render($request, $response, ['apiResponse' => 'failed']);
+            return $this->render($request, $response, ['failed' => true]);
+        }
+
+        $user = new User($request->getParam('email'), $request->getParam('password'));
+        $user->setName($request->getParam('name'));
+
+        try {
+            $this->userRepository->add($user);
+        } catch (UniqueConstraintViolationException $e) {
+            return $this->render($request, $response, ['failed' => true]);
         }
 
         return $response->withRedirect('/');
+    }
+
+    /**
+     * @param Request $request
+     * @throws Exception
+     */
+    private function validate(Request $request)
+    {
+        $validator = Validator::create();
+
+        $validator->addRule(Validator::key('name', Validator::stringType()->notEmpty()));
+        $validator->addRule(Validator::key('email', Validator::stringType()->notEmpty()->email()));
+        $validator->addRule(Validator::key('password', Validator::stringType()->notEmpty()));
+
+        $validator->assert($request->getParams());
     }
 }

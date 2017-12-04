@@ -29,12 +29,8 @@
     <br>
     <br>
 
-    {% if apiResponse == 'failed' %}
+    {% if failed %}
         <p class="response">Something went wrong while trying to register, please try again later.</p>
-    {% endif %}
-
-    {% if apiResponse.data.id %}
-        <p class="response">You have successfully been registered!</p>
     {% endif %}
 
     <form action="" method="post" style="text-align: left; width: 400px; margin: 0 auto;">
