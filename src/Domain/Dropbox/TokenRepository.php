@@ -2,6 +2,8 @@
 
 namespace DropParty\Domain\Dropbox;
 
+use DropParty\Domain\Users\UserId;
+
 interface TokenRepository
 {
     /**
@@ -10,11 +12,11 @@ interface TokenRepository
     public function add(Token $token);
 
     /**
-     * @param Token $token
+     * @param UserId $userId
      * @return bool
      * @internal param UserId $userId
      */
-    public function has(Token $token): bool;
+    public function hasTokenForUserId(UserId $userId): bool;
 
     /**
      * @param Token $token

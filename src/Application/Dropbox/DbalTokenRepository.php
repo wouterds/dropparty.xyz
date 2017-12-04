@@ -5,6 +5,7 @@ namespace DropParty\Application\Dropbox;
 use Doctrine\DBAL\Connection;
 use DropParty\Domain\Dropbox\Token;
 use DropParty\Domain\Dropbox\TokenRepository;
+use DropParty\Domain\Users\UserId;
 
 class DbalTokenRepository implements TokenRepository
 {
@@ -35,15 +36,15 @@ class DbalTokenRepository implements TokenRepository
     }
 
     /**
-     * @param Token $token
+     * @param UserId $userId
      * @return bool
      */
-    public function has(Token $token): bool
+    public function hasTokenForUserId(UserId $userId): bool
     {
         $query = $this->connection->createQueryBuilder();
         $query->select('COUNT(1)');
         $query->from(self::TABLE);
-        $query->where('user_id = ' . $query->createNamedParameter($token->getUserId()));
+        $query->where('user_id = ' . $query->createNamedParameter($userId));
 
         return (int) $query->execute()->fetchColumn(0) > 0;
     }

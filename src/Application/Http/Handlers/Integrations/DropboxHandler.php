@@ -57,7 +57,7 @@ class DropboxHandler
             $accessToken->getToken()
         );
 
-        if ($this->tokenRepository->has($token)) {
+        if ($this->tokenRepository->hasTokenForUserId($token->getUserId())) {
             $this->tokenRepository->update($token);
         } else {
             $this->tokenRepository->add($token);
