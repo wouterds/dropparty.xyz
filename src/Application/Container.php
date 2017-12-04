@@ -25,16 +25,16 @@ class Container extends LeagueContainer
         $container = new static();
         $container->delegate(new ReflectionContainer());
 
-        $container->addServiceProvider(ApplicationMonitorServiceProvider::class);
-        $container->addServiceProvider(HashIdsServiceProvider::class);
-        $container->addServiceProvider(DatabaseServiceProvider::class);
-        $container->addServiceProvider(OauthServiceProvider::class);
-        $container->addServiceProvider(HttpServiceProvider::class);
-        $container->addServiceProvider(ViewServiceProvider::class);
-        $container->addServiceProvider(UsersServiceProvider::class);
-        $container->addServiceProvider(FilesystemServiceProvider::class);
-        $container->addServiceProvider(FilesServiceProvider::class);
         $container->addServiceProvider(DropboxServiceProvider::class);
+        $container->addServiceProvider(FilesServiceProvider::class);
+        $container->addServiceProvider(FilesystemServiceProvider::class);
+        $container->addServiceProvider(HttpServiceProvider::class);
+        $container->addServiceProvider(OauthServiceProvider::class);
+        $container->addServiceProvider(UsersServiceProvider::class);
+        $container->addServiceProvider(ApplicationMonitorServiceProvider::class);
+        $container->addServiceProvider(DatabaseServiceProvider::class);
+        $container->addServiceProvider(HashIdsServiceProvider::class);
+        $container->addServiceProvider(ViewServiceProvider::class);
 
         return $container;
     }
