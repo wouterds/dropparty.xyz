@@ -68,6 +68,7 @@ class DbalTokenRepository implements TokenRepository
     {
         $query = $this->connection->createQueryBuilder();
         $query->update(self::TABLE);
+        $query->set('updated_at', 'NOW()');
         $query->set('deleted_at', 'NOW()');
         $query->where('user_id = ' . $query->createNamedParameter($token->getUserId()));
         $query->andWhere('access_token = ' . $query->createNamedParameter($token->getAccessToken()));
