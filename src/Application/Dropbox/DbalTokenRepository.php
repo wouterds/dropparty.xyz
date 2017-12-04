@@ -37,16 +37,28 @@ class DbalTokenRepository implements TokenRepository
 
     /**
      * @param UserId $userId
-     * @return bool
+     * @return Token|null
      */
-    public function hasTokenForUserId(UserId $userId): bool
+    public function findActiveTokenForUserId(UserId $userId): ?Token
     {
         $query = $this->connection->createQueryBuilder();
-        $query->select('COUNT(1)');
+        $query->select('*');
         $query->from(self::TABLE);
-        $query->where('user_id = ' . $query->createNamedParameter($userId));
+        $query->where('user_id =' . $query->createNamedParameter($userId));
+        $query->orderBy('created_at', 'DESC');
+        $query->setMaxResults(1);
 
-        return (int) $query->execute()->fetchColumn(0) > 0;
+        $result = $query->execute()->fetch();
+
+        if (empty($result)) {
+            return null;
+        }
+
+        if (!empty($result['deleted_at'])) {
+            return null;
+        }
+
+        return Token::fromArray($result);
     }
 
     /**

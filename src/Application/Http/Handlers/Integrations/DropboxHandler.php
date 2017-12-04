@@ -57,11 +57,7 @@ class DropboxHandler
             $accessToken->getToken()
         );
 
-        if ($this->tokenRepository->hasTokenForUserId($token->getUserId())) {
-            $this->tokenRepository->update($token);
-        } else {
-            $this->tokenRepository->add($token);
-        }
+        $this->tokenRepository->add($token);
 
         return $response->withRedirect('/account?integration-installed=dropbox');
     }

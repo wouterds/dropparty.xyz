@@ -46,7 +46,7 @@ class AccountHandler extends AbstractViewHandler
         $data = [];
 
         $userId = new UserId($request->getCookieParam('uid'));
-        $data['dropboxLinked'] = $this->tokenRepository->hasTokenForUserId($userId);
+        $data['dropboxLinked'] = $this->tokenRepository->findActiveTokenForUserId($userId);
 
         return $this->render($request, $response, $data);
     }

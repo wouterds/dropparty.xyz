@@ -13,10 +13,9 @@ interface TokenRepository
 
     /**
      * @param UserId $userId
-     * @return bool
-     * @internal param UserId $userId
+     * @return Token|null
      */
-    public function hasTokenForUserId(UserId $userId): bool;
+    public function findActiveTokenForUserId(UserId $userId): ?Token;
 
     /**
      * @param Token $token
