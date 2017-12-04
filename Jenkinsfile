@@ -51,6 +51,9 @@ node {
       // Deploy on production
       sh 'ssh wouterds@'+SERVER+' "cd '+folder+'; docker-compose -f docker-compose-prod.yml pull"'
       sh 'ssh wouterds@'+SERVER+' "cd '+folder+'; docker-compose -f docker-compose-prod.yml up -d"'
+
+      // Run migrations
+      sh 'ssh wouterds@'+SERVER+' "docker exec internaldroppartywebsiteprod_php-fpm_1 php composer.phar migrations:migrate"'
     }
   } catch (e) {
   } finally {
