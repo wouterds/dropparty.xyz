@@ -8,6 +8,7 @@ use DropParty\Application\Http\Handlers\Files\ViewHandler as FilesViewHandler;
 use DropParty\Application\Http\Handlers\FilesHandler;
 use DropParty\Application\Http\Handlers\HomeHandler;
 use DropParty\Application\Http\Handlers\Integrations\DropboxHandler as IntegrationsDropboxHandler;
+use DropParty\Application\Http\Handlers\Integrations\DropboxUnlinkHandler as IntegrationsDropboxUnlinkHandler;
 use DropParty\Application\Http\Handlers\SignInHandler;
 use DropParty\Application\Http\Handlers\SignInPostHandler;
 use DropParty\Application\Http\Handlers\SignOutHandler;
@@ -23,10 +24,14 @@ $app->post('/sign-up', SignUpPostHandler::class);
 $app->get('/sign-in', SignInHandler::class)->setName('sign-in');
 $app->post('/sign-in', SignInPostHandler::class);
 $app->get('/sign-out', SignOutHandler::class)->setName('sign-out');
+
 $app->get('/account', AccountHandler::class)->setName('account');
+
 $app->group('/integrations', function () use ($app) {
     $app->get('/dropbox', IntegrationsDropboxHandler::class)->setName('integrations.dropbox');
+    $app->get('/dropbox/unlink', IntegrationsDropboxUnlinkHandler::class)->setName('integrations.dropbox.unlink');
 });
+
 $app->get('/files', FilesHandler::class)->setName('files');
 $app->get('/view/{id}', FilesViewHandler::class)->setName('filesView');
 $app->get('/direct/{id}', FilesDirectHandler::class)->setName('filesDirect')->add(FilesAccessLogMiddleware::class);
