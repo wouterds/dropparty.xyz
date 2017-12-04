@@ -59,6 +59,6 @@ class DropboxHandler
 
         $this->tokenRepository->add($token);
 
-        return $response->withRedirect('/account?integration-installed=dropbox');
+        return $response->withRedirect('/account');
     }
 }
