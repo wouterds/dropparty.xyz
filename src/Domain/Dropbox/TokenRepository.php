@@ -20,5 +20,5 @@ interface TokenRepository
     /**
      * @param Token $token
      */
-    public function update(Token $token);
+    public function delete(Token $token);
 }

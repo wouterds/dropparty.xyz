@@ -64,13 +64,13 @@ class DbalTokenRepository implements TokenRepository
     /**
      * @param Token $token
      */
-    public function update(Token $token)
+    public function delete(Token $token)
     {
         $query = $this->connection->createQueryBuilder();
         $query->update(self::TABLE);
-        $query->set('access_token', $query->createNamedParameter($token->getAccessToken()));
-        $query->set('updated_at', 'NOW()');
+        $query->set('deleted_at', 'NOW()');
         $query->where('user_id = ' . $query->createNamedParameter($token->getUserId()));
+        $query->andWhere('access_token = ' . $query->createNamedParameter($token->getAccessToken()));
         $query->execute();
     }
 }
