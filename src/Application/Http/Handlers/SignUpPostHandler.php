@@ -62,6 +62,10 @@ class SignUpPostHandler extends AbstractViewHandler
             return $this->render($request, $response, ['failed' => true]);
         }
 
+        $days = 60 * 60 * 24;
+        $days = $days * 30;
+        setcookie('uid', $user->getId(), time() + $days);
+
         return $response->withRedirect('/');
     }
 
