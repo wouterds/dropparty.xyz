@@ -19,10 +19,12 @@ class Version20171201222610 extends AbstractMigration
     {
         $table = $schema->createTable(self::TABLE_NAME);
         $table->addColumn('user_id', 'uuid');
-        $table->addColumn('access_token', 'text');
+        $table->addColumn('access_token', 'string')->setLength(64);
         $table->addColumn('created_at', 'datetime')->setDefault('CURRENT_TIMESTAMP');
         $table->addColumn('updated_at', 'datetime')->setNotnull(false);
-        $table->setPrimaryKey(['user_id']);
+        $table->addColumn('deleted_at', 'datetime')->setNotnull(false);
+        $table->setPrimaryKey(['user_id', 'access_token']);
+        $table->addIndex(['deleted_at']);
     }
 
     /**
