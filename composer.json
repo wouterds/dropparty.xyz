@@ -25,6 +25,7 @@
   },
   "require": {
     "doctrine/migrations": "^1.6",
+    "emgag/flysystem-hash": "^1.0",
     "guzzlehttp/guzzle": "^6.3",
     "hashids/hashids": "^2.0",
     "jenssegers/lean": "^0.2.2",
