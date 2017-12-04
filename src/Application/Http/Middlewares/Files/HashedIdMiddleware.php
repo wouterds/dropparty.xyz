@@ -2,12 +2,6 @@
 
 namespace DropParty\Application\Http\Middlewares\Files;
 
-use DropParty\Application\Http\Handlers\Files\DirectHandler;
-use DropParty\Application\Http\Handlers\Files\DownloadHandler;
-use DropParty\Domain\Files\FileAccessLog;
-use DropParty\Domain\Files\FileAccessLogRepository;
-use DropParty\Domain\Files\FileId;
-use DropParty\Domain\Files\FileRepository;
 use Exception;
 use Hashids\Hashids;
 use Psr\Http\Message\ResponseInterface as Response;

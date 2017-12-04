@@ -3,7 +3,6 @@
 namespace DropParty\Application\Http\Handlers;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use DropParty\Application\ApiClient\DropPartyClient;
 use DropParty\Domain\Users\User;
 use DropParty\Domain\Users\UserRepository;
 use DropParty\Infrastructure\ApplicationMonitor\ApplicationMonitor;
