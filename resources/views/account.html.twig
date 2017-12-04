@@ -22,7 +22,11 @@
     <h2 style="margin-bottom: 15px;">Link Dropbox account</h2>
 
     {% if dropboxLinked %}
-        Your Dropbox account is already linked (<a href="/integrations/dropbox/unlink">unlink</a>).
+        <p>
+            Your Dropbox account is already linked (<a href="/integrations/dropbox/unlink">unlink</a>).
+            <br>
+            As long as your Dropbox account is linked this will be your default storage location for uploads.
+        </p>
     {% else %}
         <a href="/integrations/dropbox" class="button">Install Dropbox Integration</a>
     {% endif %}
