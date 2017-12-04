@@ -34,7 +34,7 @@ class Token implements JsonSerializable
     public static function fromArray(array $data)
     {
         return new static(
-            $data['user_id'],
+            new UserId($data['user_id']),
             $data['access_token']
         );
     }
