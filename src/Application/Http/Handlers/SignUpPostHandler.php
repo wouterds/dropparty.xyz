@@ -54,8 +54,6 @@ class SignUpPostHandler extends AbstractViewHandler
             return $this->render($request, $response, ['apiResponse' => 'failed']);
         }
 
-        $apiResponse = json_decode((string) $apiResponse->getBody(), true);
-
-        return $this->render($request, $response, ['apiResponse' => $apiResponse]);
+        return $response->withRedirect('/');
     }
 }
