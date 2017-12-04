@@ -76,6 +76,16 @@ $component: 'component-header';
       color: #fff;
     }
   }
+
+  &__link {
+    color: #ff3a51;
+    padding: 6px 10px;
+    font-weight: 600;
+    font-size: 0.9em;
+    outline: 0;
+    text-decoration: none;
+    margin-left: 5px;
+  }
 }
 
 @media only screen and (max-width: 960px) {
