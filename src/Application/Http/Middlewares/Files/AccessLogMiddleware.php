@@ -2,8 +2,6 @@
 
 namespace DropParty\Application\Http\Middlewares\Files;
 
-use DropParty\Application\Http\Handlers\Files\DirectHandler;
-use DropParty\Application\Http\Handlers\Files\DownloadHandler;
 use DropParty\Domain\Files\FileAccessLog;
 use DropParty\Domain\Files\FileAccessLogRepository;
 use DropParty\Domain\Files\FileId;
@@ -44,7 +42,7 @@ class AccessLogMiddleware
      */
     public function __invoke(Request $request, Response $response, Route $next): Response
     {
-        if (in_array($next->getCallable(), [DirectHandler::class, DownloadHandler::class]) === false) {
+        if (empty($next->getArgument('id'))) {
             return $next($request, $response);
         }
 
