@@ -8,6 +8,7 @@ use DropParty\Domain\Files\FileAccessLog;
 use DropParty\Domain\Files\FileAccessLogRepository;
 use DropParty\Domain\Files\FileId;
 use DropParty\Domain\Files\FileRepository;
+use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Http\Request;
 use Slim\Route;
@@ -39,6 +40,7 @@ class AccessLogMiddleware
      * @param Response $response
      * @param Route $next
      * @return Response
+     * @throws Exception
      */
     public function __invoke(Request $request, Response $response, Route $next): Response
     {
