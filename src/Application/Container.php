@@ -4,6 +4,7 @@ namespace DropParty\Application;
 
 use DropParty\Application\Dropbox\ServiceProvider as DropboxServiceProvider;
 use DropParty\Application\Files\ServiceProvider as FilesServiceProvider;
+use DropParty\Application\Filesystem\ServiceProvider as FilesystemServiceProvider;
 use DropParty\Application\Http\ServiceProvider as HttpServiceProvider;
 use DropParty\Application\Oauth\ServiceProvider as OauthServiceProvider;
 use DropParty\Application\Users\ServiceProvider as UsersServiceProvider;
@@ -31,6 +32,7 @@ class Container extends LeagueContainer
         $container->addServiceProvider(HttpServiceProvider::class);
         $container->addServiceProvider(ViewServiceProvider::class);
         $container->addServiceProvider(UsersServiceProvider::class);
+        $container->addServiceProvider(FilesystemServiceProvider::class);
         $container->addServiceProvider(FilesServiceProvider::class);
         $container->addServiceProvider(DropboxServiceProvider::class);
 
