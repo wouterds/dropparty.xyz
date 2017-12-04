@@ -8,6 +8,7 @@ use DropParty\Domain\Files\FileRepository;
 use DropParty\Domain\Users\UserId;
 use DropParty\Domain\Users\UserRepository;
 use Exception;
+use League\Flysystem\Filesystem;
 use Psr\Http\Message\UploadedFileInterface;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
@@ -31,15 +32,26 @@ class AddHandler
     private $fileHashIdRepository;
 
     /**
+     * @var Filesystem
+     */
+    private $filesystem;
+
+    /**
      * @param UserRepository $userRepository
      * @param FileRepository $fileRepository
      * @param FileHashIdRepository $fileHashIdRepository
+     * @param Filesystem $filesystem
      */
-    public function __construct(UserRepository $userRepository, FileRepository $fileRepository, FileHashIdRepository $fileHashIdRepository)
-    {
+    public function __construct(
+        UserRepository $userRepository,
+        FileRepository $fileRepository,
+        FileHashIdRepository $fileHashIdRepository,
+        Filesystem $filesystem
+    ) {
         $this->userRepository = $userRepository;
         $this->fileRepository = $fileRepository;
         $this->fileHashIdRepository = $fileHashIdRepository;
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -72,22 +84,17 @@ class AddHandler
             $uploadedFile->getSize()
         );
 
-        if (!file_exists($file->getFolderPath())) {
-            mkdir($file->getFolderPath());
-        }
-
-        $written = file_put_contents($file->getPath(), $uploadedFile->getStream());
-
-        if ($written === false) {
+        $resource = $uploadedFile->getStream()->detach();
+        if ($this->filesystem->putStream($file->getPath(), $resource) === false) {
             return $response->withStatus(400);
         }
 
-        $file->setMd5(md5_file($file->getPath()));
+        $file->setMd5($this->filesystem->hash($file->getPath(), 'md5'));
 
         try {
             $this->fileRepository->add($file);
         } catch (Exception $e) {
-            unlink($file->getPath());
+            $this->filesystem->delete($file->getPath());
             return $response->withStatus(400);
         }
 
