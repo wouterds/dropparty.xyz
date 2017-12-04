@@ -22,7 +22,7 @@ class ServiceProvider extends AbstractServiceProvider
     public function register()
     {
         $this->container->share(Filesystem::class, function () {
-            $adapter = new LocalAdapter(APP_DIR . getenv('FILESYSTEM_DIR');
+            $adapter = new LocalAdapter(APP_DIR . getenv('FILESYSTEM_DIR'));
             $hashPlugin = new HashPlugin();
 
             $filesystem = new Filesystem($adapter);
