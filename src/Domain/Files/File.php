@@ -95,7 +95,7 @@ class File implements JsonSerializable
      */
     public function getFolderPath(): string
     {
-        return APP_DIR . '/storage/files/' . $this->getUserId();
+        return APP_DIR . getenv('FILESYSTEM_DIR') . '/' . $this->getUserId();
     }
 
     /**
