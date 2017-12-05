@@ -15,7 +15,6 @@ use DropParty\Application\Http\Handlers\SignOutHandler;
 use DropParty\Application\Http\Handlers\SignUpHandler;
 use DropParty\Application\Http\Handlers\SignUpPostHandler;
 use DropParty\Application\Http\Middlewares\Users\AuthenticatedUserMiddleware as UsersAuthenticatedUserMiddleware;
-use DropParty\Application\Http\Middlewares\Files\AccessLogMiddleware as FilesAccessLogMiddleware;
 use DropParty\Application\Http\Middlewares\Files\HashedIdMiddleware as FilesHashedIdMiddleware;
 
 $app->group(null, function () use ($app) {
@@ -36,7 +35,7 @@ $app->group(null, function () use ($app) {
 
     $app->get('/files', FilesHandler::class)->setName('files');
     $app->get('/view/{id}', FilesViewHandler::class)->setName('filesView');
-    $app->get('/direct/{id}', FilesDirectHandler::class)->setName('filesDirect')->add(FilesAccessLogMiddleware::class);
-    $app->get('/download/{id}', FilesDownloadHandler::class)->setName('filesDownload')->add(FilesAccessLogMiddleware::class);
+    $app->get('/direct/{id}', FilesDirectHandler::class)->setName('filesDirect');
+    $app->get('/download/{id}', FilesDownloadHandler::class)->setName('filesDownload');
     $app->get('/{hashedId}', FilesHashedIdHandler::class)->add(FilesHashedIdMiddleware::class);
 })->add(UsersAuthenticatedUserMiddleware::class);

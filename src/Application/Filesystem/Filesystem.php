@@ -4,6 +4,8 @@ namespace DropParty\Application\Filesystem;
 
 use DropParty\Domain\Dropbox\TokenRepository as DropboxTokenRepository;
 use DropParty\Domain\Files\File;
+use DropParty\Domain\Files\FileAccessLog;
+use DropParty\Domain\Files\FileAccessLogRepository;
 use DropParty\Domain\Files\FileId;
 use DropParty\Domain\Files\FileRepository;
 use DropParty\Domain\Users\AuthenticatedUser;
@@ -11,6 +13,7 @@ use DropParty\Domain\Users\UserRepository;
 use Exception;
 use League\Flysystem\FilesystemInterface;
 use Psr\Http\Message\StreamInterface;
+use Slim\Http\Request;
 use Slim\Http\Stream;
 
 class Filesystem
@@ -39,6 +42,14 @@ class Filesystem
      * @var FileRepository
      */
     private $fileRepository;
+    /**
+     * @var Request
+     */
+    private $request;
+    /**
+     * @var FileAccessLogRepository
+     */
+    private $fileAccessLogRepository;
 
     /**
      * @param AuthenticatedUser $authenticatedUser
@@ -46,13 +57,17 @@ class Filesystem
      * @param LocalFilesystem $localFilesystem
      * @param DropboxFilesystem|null $dropboxFilesystem
      * @param FileRepository $fileRepository
+     * @param FileAccessLogRepository $fileAccessLogRepository
+     * @param Request $request
      */
     public function __construct(
         AuthenticatedUser $authenticatedUser,
         DropboxTokenRepository $dropboxTokenRepository,
         LocalFilesystem $localFilesystem,
         DropboxFilesystem $dropboxFilesystem = null,
-        FileRepository $fileRepository
+        FileRepository $fileRepository,
+        FileAccessLogRepository $fileAccessLogRepository,
+        Request $request
     ) {
         $this->localFilesystem = $localFilesystem;
         $this->dropboxFilesystem = $dropboxFilesystem;
@@ -69,6 +84,8 @@ class Filesystem
         }
 
         $this->fileRepository = $fileRepository;
+        $this->request = $request;
+        $this->fileAccessLogRepository = $fileAccessLogRepository;
     }
 
     /**
@@ -105,6 +122,23 @@ class Filesystem
         if ($file->getFilesystem() === File::FILESYSTEM_DROPBOX && $this->dropboxFilesystem) {
             $fileSystem = $this->dropboxFilesystem;
         }
+
+        $ip = $this->request->getServerParam('REMOTE_ADDR');
+        if (!empty($this->request->getHeaderLine('CF-Connecting-IP'))) {
+            $ip = $this->request->getHeaderLine('CF-Connecting-IP');
+        }
+
+        $userAgent = $this->request->getServerParam('HTTP_USER_AGENT');
+        $referrer = $this->request->getServerParam('HTTP_REFERER');
+
+        $fileAccessLog = new FileAccessLog(
+            $file->getId(),
+            $ip,
+            !empty($userAgent) ? $userAgent : null,
+            !empty($referrer) ? $referrer : null
+        );
+
+        $this->fileAccessLogRepository->add($fileAccessLog);
 
         return new Stream($fileSystem->readStream($file->getPath()));
     }
