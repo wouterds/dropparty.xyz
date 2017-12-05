@@ -4,7 +4,6 @@ namespace DropParty\Application\Http\Handlers\Integrations;
 
 use DropParty\Domain\Dropbox\TokenRepository;
 use DropParty\Domain\Users\AuthenticatedUser;
-use DropParty\Domain\Users\UserId;
 use Exception;
 use Slim\Http\Request;
 use Slim\Http\Response;

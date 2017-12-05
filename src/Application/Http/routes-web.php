@@ -14,8 +14,8 @@ use DropParty\Application\Http\Handlers\SignInPostHandler;
 use DropParty\Application\Http\Handlers\SignOutHandler;
 use DropParty\Application\Http\Handlers\SignUpHandler;
 use DropParty\Application\Http\Handlers\SignUpPostHandler;
-use DropParty\Application\Http\Middlewares\Users\AuthenticatedUserMiddleware as UsersAuthenticatedUserMiddleware;
 use DropParty\Application\Http\Middlewares\Files\HashedIdMiddleware as FilesHashedIdMiddleware;
+use DropParty\Application\Http\Middlewares\Users\AuthenticatedUserMiddleware as UsersAuthenticatedUserMiddleware;
 
 $app->group(null, function () use ($app) {
     $app->get('/', HomeHandler::class)->setName('home');

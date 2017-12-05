@@ -3,12 +3,11 @@
 namespace DropParty\Application\Http\Middlewares\Users;
 
 use Closure;
-use DropParty\Application\Container;
 use DropParty\Domain\Users\AuthenticatedUser;
 use DropParty\Domain\Users\UserId;
 use DropParty\Domain\Users\UserRepository;
-use Slim\Http\Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Http\Request;
 use Slim\Route;
 
 class AuthenticatedUserMiddleware

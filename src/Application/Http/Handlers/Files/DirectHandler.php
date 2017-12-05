@@ -8,7 +8,6 @@ use DropParty\Domain\Files\FileId;
 use DropParty\Domain\Files\FileRepository;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Slim\Http\Stream;
 
 class DirectHandler
 {

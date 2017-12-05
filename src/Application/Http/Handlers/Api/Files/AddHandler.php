@@ -7,8 +7,6 @@ use DropParty\Domain\Files\File;
 use DropParty\Domain\Files\FileHashIdRepository;
 use DropParty\Domain\Files\FileRepository;
 use DropParty\Domain\Users\AuthenticatedUser;
-use DropParty\Domain\Users\UserId;
-use DropParty\Domain\Users\UserRepository;
 use Exception;
 use Psr\Http\Message\UploadedFileInterface;
 use Respect\Validation\Validator;

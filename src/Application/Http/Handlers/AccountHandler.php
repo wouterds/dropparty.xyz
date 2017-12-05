@@ -4,7 +4,6 @@ namespace DropParty\Application\Http\Handlers;
 
 use DropParty\Domain\Dropbox\TokenRepository;
 use DropParty\Domain\Users\AuthenticatedUser;
-use DropParty\Domain\Users\UserId;
 use DropParty\Infrastructure\ApplicationMonitor\ApplicationMonitor;
 use DropParty\Infrastructure\Http\Handlers\AbstractViewHandler;
 use DropParty\Infrastructure\View\Twig;
