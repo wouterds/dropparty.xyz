@@ -36,6 +36,8 @@ class Container extends LeagueContainer
         $container->addServiceProvider(HashIdsServiceProvider::class);
         $container->addServiceProvider(ViewServiceProvider::class);
 
+        $container->share(Container::class, $container);
+
         return $container;
     }
 }

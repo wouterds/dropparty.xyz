@@ -3,6 +3,7 @@
 namespace DropParty\Application\Http\Handlers;
 
 use DropParty\Domain\Files\FileRepository;
+use DropParty\Domain\Users\AuthenticatedUser;
 use DropParty\Domain\Users\UserId;
 use DropParty\Infrastructure\ApplicationMonitor\ApplicationMonitor;
 use DropParty\Infrastructure\Http\Handlers\AbstractViewHandler;
@@ -13,6 +14,11 @@ use Slim\Http\Response;
 class FilesHandler extends AbstractViewHandler
 {
     /**
+     * @var AuthenticatedUser
+     */
+    private $authenticatedUser;
+
+    /**
      * @var FileRepository
      */
     private $fileRepository;
@@ -20,11 +26,13 @@ class FilesHandler extends AbstractViewHandler
     /**
      * @param Twig $twig
      * @param ApplicationMonitor $applicationMonitor
+     * @param AuthenticatedUser $authenticatedUser
      * @param FileRepository $fileRepository
      */
-    public function __construct(Twig $twig, ApplicationMonitor $applicationMonitor, FileRepository $fileRepository)
+    public function __construct(Twig $twig, ApplicationMonitor $applicationMonitor, AuthenticatedUser $authenticatedUser, FileRepository $fileRepository)
     {
         parent::__construct($twig, $applicationMonitor);
+        $this->authenticatedUser = $authenticatedUser;
         $this->fileRepository = $fileRepository;
     }
 
@@ -43,8 +51,7 @@ class FilesHandler extends AbstractViewHandler
      */
     public function __invoke(Request $request, Response $response): Response
     {
-        $userId = new UserId($request->getCookieParam('uid'));
-        $files = $this->fileRepository->findByUserId($userId);
+        $files = $this->fileRepository->findByUserId($this->authenticatedUser->getUser()->getId());
 
         return $this->render($request, $response, ['files' => $files]);
     }

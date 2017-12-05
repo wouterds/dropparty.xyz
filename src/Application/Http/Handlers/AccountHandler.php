@@ -3,6 +3,7 @@
 namespace DropParty\Application\Http\Handlers;
 
 use DropParty\Domain\Dropbox\TokenRepository;
+use DropParty\Domain\Users\AuthenticatedUser;
 use DropParty\Domain\Users\UserId;
 use DropParty\Infrastructure\ApplicationMonitor\ApplicationMonitor;
 use DropParty\Infrastructure\Http\Handlers\AbstractViewHandler;
@@ -13,6 +14,11 @@ use Slim\Http\Response;
 class AccountHandler extends AbstractViewHandler
 {
     /**
+     * @var AuthenticatedUser
+     */
+    private $authenticatedUser;
+
+    /**
      * @var TokenRepository
      */
     private $tokenRepository;
@@ -20,11 +26,13 @@ class AccountHandler extends AbstractViewHandler
     /**
      * @param Twig $twig
      * @param ApplicationMonitor $applicationMonitor
+     * @param AuthenticatedUser $authenticatedUser
      * @param TokenRepository $tokenRepository
      */
-    public function __construct(Twig $twig, ApplicationMonitor $applicationMonitor, TokenRepository $tokenRepository)
+    public function __construct(Twig $twig, ApplicationMonitor $applicationMonitor, AuthenticatedUser $authenticatedUser, TokenRepository $tokenRepository)
     {
         parent::__construct($twig, $applicationMonitor);
+        $this->authenticatedUser = $authenticatedUser;
         $this->tokenRepository = $tokenRepository;
     }
 
@@ -45,8 +53,7 @@ class AccountHandler extends AbstractViewHandler
     {
         $data = [];
 
-        $userId = new UserId($request->getCookieParam('uid'));
-        $data['dropboxLinked'] = $this->tokenRepository->findActiveTokenForUserId($userId);
+        $data['dropboxLinked'] = $this->tokenRepository->findActiveTokenForUserId($this->authenticatedUser->getUser()->getId());
 
         return $this->render($request, $response, $data);
     }

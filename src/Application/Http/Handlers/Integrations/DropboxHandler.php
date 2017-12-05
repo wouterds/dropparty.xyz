@@ -5,6 +5,7 @@ namespace DropParty\Application\Http\Handlers\Integrations;
 use DropParty\Application\Oauth\DropboxOauthProvider;
 use DropParty\Domain\Dropbox\Token;
 use DropParty\Domain\Dropbox\TokenRepository;
+use DropParty\Domain\Users\AuthenticatedUser;
 use DropParty\Domain\Users\UserId;
 use Exception;
 use Slim\Http\Request;
@@ -12,6 +13,11 @@ use Slim\Http\Response;
 
 class DropboxHandler
 {
+    /**
+     * @var AuthenticatedUser
+     */
+    private $authenticatedUser;
+
     /**
      * @var DropboxOauthProvider
      */
@@ -23,11 +29,13 @@ class DropboxHandler
     private $tokenRepository;
 
     /**
+     * @param AuthenticatedUser $authenticatedUser
      * @param DropboxOauthProvider $dropboxOauthProvider
      * @param TokenRepository $tokenRepository
      */
-    public function __construct(DropboxOauthProvider $dropboxOauthProvider, TokenRepository $tokenRepository)
+    public function __construct(AuthenticatedUser $authenticatedUser, DropboxOauthProvider $dropboxOauthProvider, TokenRepository $tokenRepository)
     {
+        $this->authenticatedUser = $authenticatedUser;
         $this->oauthProvider = $dropboxOauthProvider;
         $this->tokenRepository = $tokenRepository;
     }
@@ -53,7 +61,7 @@ class DropboxHandler
         ]);
 
         $token = new Token(
-            new UserId($request->getCookieParam('uid')),
+            $this->authenticatedUser->getUser()->getId(),
             $accessToken->getToken()
         );
 

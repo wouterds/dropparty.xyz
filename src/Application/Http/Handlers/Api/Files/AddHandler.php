@@ -5,6 +5,7 @@ namespace DropParty\Application\Http\Handlers\Api\Files;
 use DropParty\Domain\Files\File;
 use DropParty\Domain\Files\FileHashIdRepository;
 use DropParty\Domain\Files\FileRepository;
+use DropParty\Domain\Users\AuthenticatedUser;
 use DropParty\Domain\Users\UserId;
 use DropParty\Domain\Users\UserRepository;
 use Exception;
@@ -16,11 +17,6 @@ use Slim\Http\Response;
 
 class AddHandler
 {
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
-
     /**
      * @var FileRepository
      */
@@ -35,20 +31,24 @@ class AddHandler
      * @var Filesystem
      */
     private $filesystem;
+    /**
+     * @var AuthenticatedUser
+     */
+    private $authenticatedUser;
 
     /**
-     * @param UserRepository $userRepository
+     * @param AuthenticatedUser $authenticatedUser
      * @param FileRepository $fileRepository
      * @param FileHashIdRepository $fileHashIdRepository
      * @param Filesystem $filesystem
      */
     public function __construct(
-        UserRepository $userRepository,
+        AuthenticatedUser $authenticatedUser,
         FileRepository $fileRepository,
         FileHashIdRepository $fileHashIdRepository,
         Filesystem $filesystem
     ) {
-        $this->userRepository = $userRepository;
+        $this->authenticatedUser = $authenticatedUser;
         $this->fileRepository = $fileRepository;
         $this->fileHashIdRepository = $fileHashIdRepository;
         $this->filesystem = $filesystem;
@@ -67,18 +67,15 @@ class AddHandler
             return $response->withStatus(400);
         }
 
-        $uid = $request->getParam('uid');
         /** @var UploadedFileInterface $uploadedFile */
         $uploadedFile = $request->getUploadedFiles()['file'];
 
-        $user = $this->userRepository->find(new UserId($uid));
-
-        if (empty($user)) {
+        if (!$this->authenticatedUser->isLoggedIn()) {
             return $response->withStatus(400);
         }
 
         $file = new File(
-            $user->getId(),
+            $this->authenticatedUser->getUser()->getId(),
             $uploadedFile->getClientFilename(),
             $uploadedFile->getClientMediaType(),
             $uploadedFile->getSize()
