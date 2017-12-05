@@ -2,6 +2,7 @@
 
 namespace DropParty\Application\Users;
 
+use DropParty\Domain\Users\AuthenticatedUser;
 use DropParty\Domain\Users\UserRepository;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
@@ -21,6 +22,10 @@ class ServiceProvider extends AbstractServiceProvider
     {
         $this->container->share(UserRepository::class, function () {
             return $this->container->get(DbalUserRepository::class);
+        });
+
+        $this->container->share(AuthenticatedUser::class, function () {
+            return new AuthenticatedUser();
         });
     }
 }

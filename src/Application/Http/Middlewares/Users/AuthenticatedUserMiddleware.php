@@ -14,23 +14,23 @@ use Slim\Route;
 class AuthenticatedUserMiddleware
 {
     /**
-     * @var Container
-     */
-    private $container;
-
-    /**
      * @var UserRepository
      */
     private $userRepository;
 
     /**
-     * @param Container $container
-     * @param UserRepository $userRepository
+     * @var AuthenticatedUser
      */
-    public function __construct(Container $container, UserRepository $userRepository)
+    private $authenticatedUser;
+
+    /**
+     * @param UserRepository $userRepository
+     * @param AuthenticatedUser $authenticatedUser
+     */
+    public function __construct(UserRepository $userRepository, AuthenticatedUser $authenticatedUser)
     {
-        $this->container = $container;
         $this->userRepository = $userRepository;
+        $this->authenticatedUser = $authenticatedUser;
     }
 
     /**
@@ -56,7 +56,9 @@ class AuthenticatedUserMiddleware
             $user = $this->userRepository->find($userId);
         }
 
-        $this->container->share(AuthenticatedUser::class, new AuthenticatedUser($user));
+        if ($user) {
+            $this->authenticatedUser->setUser($user);
+        }
 
         return $next($request, $response);
     }

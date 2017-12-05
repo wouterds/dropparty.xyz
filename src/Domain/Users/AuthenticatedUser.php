@@ -10,9 +10,17 @@ class AuthenticatedUser
     private $user;
 
     /**
-     * @param User|null $user
+     * @return bool
      */
-    public function __construct(User $user = null)
+    public function isLoggedIn(): bool
+    {
+        return $this->user !== null;
+    }
+
+    /**
+     * @param User $user
+     */
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }
@@ -26,10 +34,14 @@ class AuthenticatedUser
     }
 
     /**
-     * @return bool
+     * @return UserId|null
      */
-    public function isLoggedIn(): bool
+    public function getUserId(): ?UserId
     {
-        return $this->user !== null;
+        if (empty($this->user)) {
+            return null;
+        }
+
+        return $this->user->getId();
     }
 }
