@@ -2,6 +2,7 @@
 
 namespace DropParty\Application\Http\Middlewares\Users;
 
+use Closure;
 use DropParty\Application\Container;
 use DropParty\Domain\Users\AuthenticatedUser;
 use DropParty\Domain\Users\UserId;
@@ -35,10 +36,10 @@ class AuthenticatedUserMiddleware
     /**
      * @param Request $request
      * @param Response $response
-     * @param Route $next
+     * @param Route|Closure $next
      * @return Response
      */
-    public function __invoke(Request $request, Response $response, Route $next): Response
+    public function __invoke(Request $request, Response $response, $next): Response
     {
         $userId = null;
 
