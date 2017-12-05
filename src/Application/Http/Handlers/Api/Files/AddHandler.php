@@ -2,6 +2,7 @@
 
 namespace DropParty\Application\Http\Handlers\Api\Files;
 
+use DropParty\Application\Filesystem\Filesystem;
 use DropParty\Domain\Files\File;
 use DropParty\Domain\Files\FileHashIdRepository;
 use DropParty\Domain\Files\FileRepository;
@@ -9,7 +10,6 @@ use DropParty\Domain\Users\AuthenticatedUser;
 use DropParty\Domain\Users\UserId;
 use DropParty\Domain\Users\UserRepository;
 use Exception;
-use League\Flysystem\Filesystem;
 use Psr\Http\Message\UploadedFileInterface;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
@@ -81,17 +81,7 @@ class AddHandler
             $uploadedFile->getSize()
         );
 
-        $resource = $uploadedFile->getStream()->detach();
-        if ($this->filesystem->putStream($file->getPath(), $resource) === false) {
-            return $response->withStatus(400);
-        }
-
-        $file->setMd5($this->filesystem->hash($file->getPath(), 'md5'));
-
-        try {
-            $this->fileRepository->add($file);
-        } catch (Exception $e) {
-            $this->filesystem->delete($file->getPath());
+        if (!$this->filesystem->store($file, $uploadedFile->getStream())) {
             return $response->withStatus(400);
         }
 

@@ -7,6 +7,9 @@ use JsonSerializable;
 
 class File implements JsonSerializable
 {
+    public const FILESYSTEM_LOCAL = 'LOCAL';
+    public const FILESYSTEM_DROPBOX = 'DROPBOX';
+
     /**
      * @var FileId
      */
@@ -36,6 +39,11 @@ class File implements JsonSerializable
      * @var string
      */
     private $md5;
+
+    /**
+     * @var string
+     */
+    private $filesystem;
 
     /**
      * @var string
@@ -76,6 +84,7 @@ class File implements JsonSerializable
         );
         $file->id = new FileId(!empty($data['id']) ? $data['id'] : null);
         $file->md5 = !empty($data['md5']) ? $data['md5'] : null;
+        $file->filesystem = !empty($data['filesystem']) ? $data['filesystem'] : null;
         $file->hashId = !empty($data['hash_id']) ? $data['hash_id'] : null;
         $file->createdAt = !empty($data['created_at']) ? $data['created_at'] : null;
 
@@ -152,6 +161,22 @@ class File implements JsonSerializable
     public function setMd5(string $md5)
     {
         $this->md5 = $md5;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilesystem(): string
+    {
+        return $this->filesystem;
+    }
+
+    /**
+     * @param string $filesystem
+     */
+    public function setFilesystem(string $filesystem): void
+    {
+        $this->filesystem = $filesystem;
     }
 
     /**

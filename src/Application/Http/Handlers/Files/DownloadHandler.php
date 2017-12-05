@@ -2,10 +2,10 @@
 
 namespace DropParty\Application\Http\Handlers\Files;
 
+use DropParty\Application\Filesystem\Filesystem;
 use DropParty\Domain\Files\FileAccessLogRepository;
 use DropParty\Domain\Files\FileId;
 use DropParty\Domain\Files\FileRepository;
-use League\Flysystem\Filesystem;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Stream;
@@ -31,8 +31,11 @@ class DownloadHandler
      * @param FileAccessLogRepository $fileAccessLogRepository
      * @param Filesystem $filesystem
      */
-    public function __construct(FileRepository $fileRepository, FileAccessLogRepository $fileAccessLogRepository, Filesystem $filesystem)
-    {
+    public function __construct(
+        FileRepository $fileRepository,
+        FileAccessLogRepository $fileAccessLogRepository,
+        Filesystem $filesystem
+    ) {
         $this->fileRepository = $fileRepository;
         $this->fileAccessLogRepository = $fileAccessLogRepository;
         $this->filesystem = $filesystem;
@@ -59,7 +62,7 @@ class DownloadHandler
         $response = $response->withHeader('Content-Transfer-Encoding', 'binary');
         $response = $response->withHeader('Connection', 'Keep-Alive');
         $response = $response->withHeader('Content-Length', $file->getSize());
-        $response = $response->withBody(new Stream($this->filesystem->readStream($file->getPath())));
+        $response = $response->withBody($this->filesystem->get($file));
 
         return $response;
     }
