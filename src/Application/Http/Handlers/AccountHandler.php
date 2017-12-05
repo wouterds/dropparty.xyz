@@ -52,7 +52,7 @@ class AccountHandler extends AbstractViewHandler
     {
         $data = [];
 
-        $data['dropboxLinked'] = $this->tokenRepository->findActiveTokenForUserId($this->authenticatedUser->getUser()->getId());
+        $data['dropboxLinked'] = $this->tokenRepository->findActiveTokenForUserId($this->authenticatedUser->getUserId());
 
         return $this->render($request, $response, $data);
     }

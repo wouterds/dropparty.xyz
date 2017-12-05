@@ -73,7 +73,7 @@ class AddHandler
         }
 
         $file = new File(
-            $this->authenticatedUser->getUser()->getId(),
+            $this->authenticatedUser->getUserId(),
             $uploadedFile->getClientFilename(),
             $uploadedFile->getClientMediaType(),
             $uploadedFile->getSize()

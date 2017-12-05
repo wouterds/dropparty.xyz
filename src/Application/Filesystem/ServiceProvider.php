@@ -48,7 +48,7 @@ class ServiceProvider extends AbstractServiceProvider
             /** @var TokenRepository $dropboxTokenRepository */
             $dropboxTokenRepository = $this->container->get(TokenRepository::class);
 
-            $dropboxToken = $dropboxTokenRepository->findActiveTokenForUserId($authenticatedUser->getUser()->getId());
+            $dropboxToken = $dropboxTokenRepository->findActiveTokenForUserId($authenticatedUser->getUserId());
 
             if (!$dropboxToken) {
                 return null;

@@ -60,7 +60,7 @@ class DropboxHandler
         ]);
 
         $token = new Token(
-            $this->authenticatedUser->getUser()->getId(),
+            $this->authenticatedUser->getUserId(),
             $accessToken->getToken()
         );
 

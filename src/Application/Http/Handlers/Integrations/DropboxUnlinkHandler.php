@@ -38,7 +38,7 @@ class DropboxUnlinkHandler
      */
     public function __invoke(Request $request, Response $response): Response
     {
-        $token = $this->tokenRepository->findActiveTokenForUserId($this->authenticatedUser->getUser()->getId());
+        $token = $this->tokenRepository->findActiveTokenForUserId($this->authenticatedUser->getUserId());
 
         if (!empty($token)) {
             $this->tokenRepository->delete($token);

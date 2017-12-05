@@ -73,7 +73,7 @@ class Filesystem
         $this->defaultFilesystem = $localFilesystem;
 
         $activeDropboxToken = $dropboxTokenRepository->findActiveTokenForUserId(
-            $authenticatedUser->getUser()->getId()
+            $authenticatedUser->getUserId()
         );
 
         if (!empty($activeDropboxToken)) {

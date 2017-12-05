@@ -50,7 +50,7 @@ class FilesHandler extends AbstractViewHandler
      */
     public function __invoke(Request $request, Response $response): Response
     {
-        $files = $this->fileRepository->findByUserId($this->authenticatedUser->getUser()->getId());
+        $files = $this->fileRepository->findByUserId($this->authenticatedUser->getUserId());
 
         return $this->render($request, $response, ['files' => $files]);
     }
