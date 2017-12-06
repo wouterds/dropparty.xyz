@@ -116,9 +116,9 @@ class Filesystem
      */
     public function get(File $file): StreamInterface
     {
-        $fileSystem = $this->localFilesystem;
+        $filesystem = $this->localFilesystem;
         if ($file->getFilesystem() === File::FILESYSTEM_DROPBOX && $this->dropboxFilesystem) {
-            $fileSystem = $this->dropboxFilesystem;
+            $filesystem = $this->dropboxFilesystem;
         }
 
         $ip = $this->request->getServerParam('REMOTE_ADDR');
@@ -138,6 +138,6 @@ class Filesystem
 
         $this->fileAccessLogRepository->add($fileAccessLog);
 
-        return new Stream($fileSystem->readStream($file->getPath()));
+        return new Stream($filesystem->readStream($file->getPath()));
     }
 }

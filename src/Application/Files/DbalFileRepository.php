@@ -46,6 +46,7 @@ class DbalFileRepository implements FileRepository
             'content_type' => $user->getContentType(),
             'size' => $user->getSize(),
             'md5' => $user->getMd5(),
+            'filesystem' => $user->getFilesystem(),
         ]);
     }
 
