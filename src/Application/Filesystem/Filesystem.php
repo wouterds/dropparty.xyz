@@ -2,16 +2,15 @@
 
 namespace DropParty\Application\Filesystem;
 
-use DateTime;
 use DropParty\Domain\Dropbox\TokenRepository as DropboxTokenRepository;
 use DropParty\Domain\Files\File;
 use DropParty\Domain\Files\FileAccessLog;
 use DropParty\Domain\Files\FileAccessLogRepository;
 use DropParty\Domain\Files\FileId;
 use DropParty\Domain\Files\FileRepository;
-use DropParty\Domain\Users\AuthenticatedUser;
 use DropParty\Infrastructure\Cache\Cache;
 use Exception;
+use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use Psr\Http\Message\StreamInterface;
 use Slim\Http\Request;
@@ -43,21 +42,28 @@ class Filesystem
      * @var FileRepository
      */
     private $fileRepository;
+
     /**
      * @var Request
      */
     private $request;
+
     /**
      * @var FileAccessLogRepository
      */
     private $fileAccessLogRepository;
+
     /**
      * @var Cache
      */
     private $cache;
 
     /**
-     * @param AuthenticatedUser $authenticatedUser
+     * @var DropboxTokenRepository
+     */
+    private $dropboxTokenRepository;
+
+    /**
      * @param DropboxTokenRepository $dropboxTokenRepository
      * @param LocalFilesystem $localFilesystem
      * @param DropboxFilesystem|null $dropboxFilesystem
@@ -67,7 +73,6 @@ class Filesystem
      * @param Request $request
      */
     public function __construct(
-        AuthenticatedUser $authenticatedUser,
         DropboxTokenRepository $dropboxTokenRepository,
         LocalFilesystem $localFilesystem,
         DropboxFilesystem $dropboxFilesystem = null,
@@ -76,50 +81,45 @@ class Filesystem
         Cache $cache,
         Request $request
     ) {
-        $this->localFilesystem = $localFilesystem;
-        $this->dropboxFilesystem = $dropboxFilesystem;
-        $this->defaultFilesystemType = File::FILESYSTEM_LOCAL;
-        $this->defaultFilesystem = $localFilesystem;
-
-        $activeDropboxToken = $dropboxTokenRepository->findActiveTokenForUserId(
-            $authenticatedUser->getUserId()
-        );
-
-        if (!empty($activeDropboxToken)) {
-            $this->defaultFilesystemType = File::FILESYSTEM_DROPBOX;
-            $this->defaultFilesystem = $dropboxFilesystem;
-        }
-
         $this->fileRepository = $fileRepository;
         $this->request = $request;
         $this->fileAccessLogRepository = $fileAccessLogRepository;
         $this->cache = $cache;
+        $this->dropboxTokenRepository = $dropboxTokenRepository;
+        $this->localFilesystem = $localFilesystem;
+        $this->dropboxFilesystem = $dropboxFilesystem;
     }
 
     /**
      * @param File $file
      * @param StreamInterface $stream
      * @return bool
+     * @throws FileNotFoundException
      */
     public function store(File $file, StreamInterface $stream): bool
     {
-        $resource = $stream->detach();
+        $filesystem = $this->filesystemForFile($file);
 
-        if ($this->defaultFilesystem->putStream($file->getPath(), $resource) === false) {
+        if (get_class($filesystem) === DropboxFilesystem::class) {
+            $file->setFilesystem(File::FILESYSTEM_DROPBOX);
+        } else {
+            $file->setFilesystem(File::FILESYSTEM_LOCAL);
+        }
+
+        $this->cacheStore($file->getId(), $stream);
+
+        if ($filesystem->putStream($file->getPath(), $stream->detach()) === false) {
             return false;
         }
 
-        $file->setFilesystem($this->defaultFilesystemType);
-        $file->setMd5($this->defaultFilesystem->hash($file->getPath(), 'md5'));
+        $file->setMd5($filesystem->hash($file->getPath(), 'md5'));
 
         try {
             $this->fileRepository->add($file);
         } catch (Exception $e) {
-            $this->defaultFilesystem->delete($file->getPath());
+            $filesystem->delete($file->getPath());
             return false;
         }
-
-        $this->cacheStore($file->getId(), new Stream($resource));
 
         return true;
     }
@@ -127,17 +127,14 @@ class Filesystem
     /**
      * @param File $file
      * @return StreamInterface
+     * @throws FileNotFoundException
      */
     public function get(File $file): StreamInterface
     {
         $stream = $this->cacheGet($file->getId());
 
         if (empty($stream)) {
-            $filesystem = $this->localFilesystem;
-            if ($file->getFilesystem() === File::FILESYSTEM_DROPBOX && $this->dropboxFilesystem) {
-                $filesystem = $this->dropboxFilesystem;
-            }
-
+            $filesystem = $this->filesystemForFile($file);
             $stream = new Stream($filesystem->readStream($file->getPath()));
         }
 
@@ -161,6 +158,23 @@ class Filesystem
         $this->cacheStore($file->getId(), $stream);
 
         return $stream;
+    }
+
+    /**
+     * @param File $file
+     * @return FilesystemInterface
+     */
+    private function filesystemForFile(File $file): FilesystemInterface
+    {
+        if ($file->getFilesystem() === File::FILESYSTEM_DROPBOX || empty($file->getFilesystem())) {
+            $dropboxToken = $this->dropboxTokenRepository->findActiveTokenForUserId($file->getUserId());
+
+            if ($dropboxToken) {
+                return DropboxFilesystem::filesystemForDropboxToken($dropboxToken);
+            }
+        }
+
+        return $this->localFilesystem;
     }
 
     /**

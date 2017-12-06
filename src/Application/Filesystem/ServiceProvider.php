@@ -4,13 +4,8 @@ namespace DropParty\Application\Filesystem;
 
 use DropParty\Domain\Dropbox\TokenRepository;
 use DropParty\Domain\Users\AuthenticatedUser;
-use Emgag\Flysystem\Hash\HashPlugin;
 use League\Container\ServiceProvider\AbstractServiceProvider;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\Adapter\Local as LocalAdapter;
 use League\Flysystem\Filesystem as LeagueFilesystem;
-use Spatie\Dropbox\Client as DropboxClient;
-use Spatie\FlysystemDropbox\DropboxAdapter;
 
 class ServiceProvider extends AbstractServiceProvider
 {
@@ -29,12 +24,7 @@ class ServiceProvider extends AbstractServiceProvider
     public function register()
     {
         $this->container->share(LocalFilesystem::class, function () {
-            $localAdapter = new LocalAdapter(APP_DIR . getenv('FILESYSTEM_DIR'));
-
-            $filesystem = new LocalFilesystem($localAdapter);
-            $filesystem->addPlugin(new HashPlugin());
-
-            return $filesystem;
+            return LocalFilesystem::filesystem();
         });
 
         $this->container->share(DropboxFilesystem::class, function () {
@@ -54,17 +44,7 @@ class ServiceProvider extends AbstractServiceProvider
                 return null;
             }
 
-            $dropboxClient = new DropboxClient(
-                $dropboxToken->getAccessToken(),
-                null,
-                1024 * 1024 * getenv('DROPBOX_MAX_CHUNK_SIZE')
-            );
-            $dropboxAdapter = new DropboxAdapter($dropboxClient);
-
-            $filesystem = new DropboxFilesystem($dropboxAdapter);
-            $filesystem->addPlugin(new HashPlugin());
-
-            return $filesystem;
+            return DropboxFilesystem::filesystemForDropboxToken($dropboxToken);
         });
     }
 }

@@ -14,7 +14,7 @@ class AuthenticatedUser
      */
     public function isLoggedIn(): bool
     {
-        return $this->user !== null;
+        return !empty($this->user);
     }
 
     /**

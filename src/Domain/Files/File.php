@@ -164,9 +164,9 @@ class File implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getFilesystem(): string
+    public function getFilesystem(): ?string
     {
         return $this->filesystem;
     }
@@ -193,6 +193,14 @@ class File implements JsonSerializable
     public function setHashId(string $hashId)
     {
         $this->hashId = $hashId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCreatedAt(): string
+    {
+        return $this->createdAt;
     }
 
     /**
