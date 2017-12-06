@@ -29,9 +29,9 @@ class ServiceProvider extends AbstractServiceProvider
     public function register()
     {
         $this->container->share(LocalFilesystem::class, function () {
-            $adapter = new LocalAdapter(APP_DIR . getenv('FILESYSTEM_DIR'));
+            $localAdapter = new LocalAdapter(APP_DIR . getenv('FILESYSTEM_DIR'));
 
-            $filesystem = new LocalFilesystem($adapter);
+            $filesystem = new LocalFilesystem($localAdapter);
             $filesystem->addPlugin(new HashPlugin());
 
             return $filesystem;
@@ -54,9 +54,14 @@ class ServiceProvider extends AbstractServiceProvider
                 return null;
             }
 
-            $adapter = new DropboxAdapter(new DropboxClient($dropboxToken->getAccessToken()));
+            $dropboxClient = new DropboxClient(
+                $dropboxToken->getAccessToken(),
+                null,
+                1024 * 1024 * getenv('DROPBOX_MAX_CHUNK_SIZE')
+            );
+            $dropboxAdapter = new DropboxAdapter($dropboxClient);
 
-            $filesystem = new DropboxFilesystem($adapter);
+            $filesystem = new DropboxFilesystem($dropboxAdapter);
             $filesystem->addPlugin(new HashPlugin());
 
             return $filesystem;
