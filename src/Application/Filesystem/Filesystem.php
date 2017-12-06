@@ -2,12 +2,15 @@
 
 namespace DropParty\Application\Filesystem;
 
+use DateTime;
 use DropParty\Domain\Dropbox\TokenRepository as DropboxTokenRepository;
 use DropParty\Domain\Files\File;
 use DropParty\Domain\Files\FileAccessLog;
 use DropParty\Domain\Files\FileAccessLogRepository;
+use DropParty\Domain\Files\FileId;
 use DropParty\Domain\Files\FileRepository;
 use DropParty\Domain\Users\AuthenticatedUser;
+use DropParty\Infrastructure\Cache\Cache;
 use Exception;
 use League\Flysystem\FilesystemInterface;
 use Psr\Http\Message\StreamInterface;
@@ -48,6 +51,10 @@ class Filesystem
      * @var FileAccessLogRepository
      */
     private $fileAccessLogRepository;
+    /**
+     * @var Cache
+     */
+    private $cache;
 
     /**
      * @param AuthenticatedUser $authenticatedUser
@@ -56,6 +63,7 @@ class Filesystem
      * @param DropboxFilesystem|null $dropboxFilesystem
      * @param FileRepository $fileRepository
      * @param FileAccessLogRepository $fileAccessLogRepository
+     * @param Cache $cache
      * @param Request $request
      */
     public function __construct(
@@ -65,6 +73,7 @@ class Filesystem
         DropboxFilesystem $dropboxFilesystem = null,
         FileRepository $fileRepository,
         FileAccessLogRepository $fileAccessLogRepository,
+        Cache $cache,
         Request $request
     ) {
         $this->localFilesystem = $localFilesystem;
@@ -84,6 +93,7 @@ class Filesystem
         $this->fileRepository = $fileRepository;
         $this->request = $request;
         $this->fileAccessLogRepository = $fileAccessLogRepository;
+        $this->cache = $cache;
     }
 
     /**
@@ -93,7 +103,9 @@ class Filesystem
      */
     public function store(File $file, StreamInterface $stream): bool
     {
-        if ($this->defaultFilesystem->putStream($file->getPath(), $stream->detach()) === false) {
+        $resource = $stream->detach();
+
+        if ($this->defaultFilesystem->putStream($file->getPath(), $resource) === false) {
             return false;
         }
 
@@ -107,6 +119,8 @@ class Filesystem
             return false;
         }
 
+        $this->cacheStore($file->getId(), new Stream($resource));
+
         return true;
     }
 
@@ -116,9 +130,15 @@ class Filesystem
      */
     public function get(File $file): StreamInterface
     {
-        $filesystem = $this->localFilesystem;
-        if ($file->getFilesystem() === File::FILESYSTEM_DROPBOX && $this->dropboxFilesystem) {
-            $filesystem = $this->dropboxFilesystem;
+        $stream = $this->cacheGet($file->getId());
+
+        if (empty($stream)) {
+            $filesystem = $this->localFilesystem;
+            if ($file->getFilesystem() === File::FILESYSTEM_DROPBOX && $this->dropboxFilesystem) {
+                $filesystem = $this->dropboxFilesystem;
+            }
+
+            $stream = new Stream($filesystem->readStream($file->getPath()));
         }
 
         $ip = $this->request->getServerParam('REMOTE_ADDR');
@@ -138,6 +158,41 @@ class Filesystem
 
         $this->fileAccessLogRepository->add($fileAccessLog);
 
-        return new Stream($filesystem->readStream($file->getPath()));
+        $this->cacheStore($file->getId(), $stream);
+
+        return $stream;
+    }
+
+    /**
+     * @param FileId $fileId
+     * @param StreamInterface $stream
+     */
+    private function cacheStore(FileId $fileId, StreamInterface $stream)
+    {
+        $item = $this->cache->getItem('files.' . $fileId);
+
+        if (!$this->cache->has($item->getKey())) {
+            $item->set($stream->getContents());
+        }
+
+        $item->expiresAfter(strtotime('5 minutes'));
+        $this->cache->save($item);
+    }
+
+    /**
+     * @param FileId $fileId
+     * @return StreamInterface|null
+     */
+    private function cacheGet(FileId $fileId): ?StreamInterface
+    {
+        $item = $this->cache->getItem('files.' . $fileId);
+
+        if (!$this->cache->has($item->getKey())) {
+            return null;
+        }
+
+        $tmp = tmpfile();
+        fwrite($tmp, $item->get());
+        return new Stream($tmp);
     }
 }

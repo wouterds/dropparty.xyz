@@ -10,6 +10,7 @@ use DropParty\Application\Oauth\ServiceProvider as OauthServiceProvider;
 use DropParty\Application\Users\ServiceProvider as UsersServiceProvider;
 use DropParty\Infrastructure\ApplicationMonitor\ServiceProvider as ApplicationMonitorServiceProvider;
 use DropParty\Infrastructure\Database\ServiceProvider as DatabaseServiceProvider;
+use DropParty\Infrastructure\Cache\ServiceProvider as CacheServiceProvider;
 use DropParty\Infrastructure\HashIds\ServiceProvider as HashIdsServiceProvider;
 use DropParty\Infrastructure\View\ServiceProvider as ViewServiceProvider;
 use League\Container\Container as LeagueContainer;
@@ -33,6 +34,7 @@ class Container extends LeagueContainer
         $container->addServiceProvider(UsersServiceProvider::class);
         $container->addServiceProvider(ApplicationMonitorServiceProvider::class);
         $container->addServiceProvider(DatabaseServiceProvider::class);
+        $container->addServiceProvider(CacheServiceProvider::class);
         $container->addServiceProvider(HashIdsServiceProvider::class);
         $container->addServiceProvider(ViewServiceProvider::class);
 

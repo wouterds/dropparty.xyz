@@ -6,7 +6,9 @@ RUN NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
     && docker-php-ext-install -j${NPROC} pdo pdo_mysql mysqli \
     && apk add --update --no-cache gmp gmp-dev \
     && docker-php-ext-install -j${NPROC} gmp \
-    && apk del gmp-dev
+    && apk del gmp-dev \
+    && pecl install -o -f redis \
+    && docker-php-ext-enable redis
 
 # PHP configuration file
 COPY ./docker/php-fpm/php.ini /usr/local/etc/php/conf.d/custom.ini
