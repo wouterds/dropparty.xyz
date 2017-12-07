@@ -183,8 +183,8 @@ class Filesystem
      */
     private function cacheStore(FileId $fileId, StreamInterface $stream)
     {
-        // Bigger than 2.5MB? Don't cache
-        if ($stream->getSize() > 1024 * 1024 * 2.5) {
+        // Bigger than 10MB? Don't cache
+        if ($stream->getSize() > 1024 * 1024 * 10) {
             return;
         }
 
