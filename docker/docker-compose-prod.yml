@@ -39,9 +39,6 @@ services:
       - default
       - databaseserver_default
 
-  redis:
-    image: redis:4.0-alpine
-
 networks:
   databaseserver_default:
     external: true
