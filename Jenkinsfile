@@ -56,6 +56,7 @@ node {
       sh 'ssh wouterds@'+SERVER+' "docker exec internaldroppartywebsiteprod_php-fpm_1 php composer.phar migrations:migrate"'
     }
   } catch (e) {
+    throw e
   } finally {
     // Clean up
     cleanWorkspace()
