@@ -8,6 +8,7 @@ use DropParty\Domain\Files\FileAccessLog;
 use DropParty\Domain\Files\FileAccessLogRepository;
 use DropParty\Domain\Files\FileId;
 use DropParty\Domain\Files\FileRepository;
+use DropParty\Infrastructure\Cache\Cache;
 use Exception;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
@@ -18,6 +19,11 @@ use Slim\Http\Stream;
 class Filesystem
 {
     /**
+     * @var string
+     */
+    private $defaultFilesystemType;
+
+    /**
      * @var LocalFilesystem
      */
     private $localFilesystem;
@@ -26,6 +32,11 @@ class Filesystem
      * @var DropboxFilesystem|null
      */
     private $dropboxFilesystem;
+
+    /**
+     * @var FilesystemInterface
+     */
+    private $defaultFilesystem;
 
     /**
      * @var FileRepository
@@ -43,6 +54,11 @@ class Filesystem
     private $fileAccessLogRepository;
 
     /**
+     * @var Cache
+     */
+    private $cache;
+
+    /**
      * @var DropboxTokenRepository
      */
     private $dropboxTokenRepository;
@@ -53,6 +69,7 @@ class Filesystem
      * @param DropboxFilesystem|null $dropboxFilesystem
      * @param FileRepository $fileRepository
      * @param FileAccessLogRepository $fileAccessLogRepository
+     * @param Cache $cache
      * @param Request $request
      */
     public function __construct(
@@ -61,11 +78,13 @@ class Filesystem
         DropboxFilesystem $dropboxFilesystem = null,
         FileRepository $fileRepository,
         FileAccessLogRepository $fileAccessLogRepository,
+        Cache $cache,
         Request $request
     ) {
         $this->fileRepository = $fileRepository;
         $this->request = $request;
         $this->fileAccessLogRepository = $fileAccessLogRepository;
+        $this->cache = $cache;
         $this->dropboxTokenRepository = $dropboxTokenRepository;
         $this->localFilesystem = $localFilesystem;
         $this->dropboxFilesystem = $dropboxFilesystem;
@@ -86,6 +105,8 @@ class Filesystem
         } else {
             $file->setFilesystem(File::FILESYSTEM_LOCAL);
         }
+
+        $this->cacheStore($file->getId(), $stream);
 
         if ($filesystem->putStream($file->getPath(), $stream->detach()) === false) {
             return false;
@@ -110,8 +131,12 @@ class Filesystem
      */
     public function get(File $file): StreamInterface
     {
-        $filesystem = $this->filesystemForFile($file);
-        $stream = new Stream($filesystem->readStream($file->getPath()));
+        $stream = $this->cacheGet($file->getId());
+
+        if (empty($stream)) {
+            $filesystem = $this->filesystemForFile($file);
+            $stream = new Stream($filesystem->readStream($file->getPath()));
+        }
 
         $ip = $this->request->getServerParam('REMOTE_ADDR');
         if (!empty($this->request->getHeaderLine('CF-Connecting-IP'))) {
@@ -129,6 +154,8 @@ class Filesystem
         );
 
         $this->fileAccessLogRepository->add($fileAccessLog);
+
+        $this->cacheStore($file->getId(), $stream);
 
         return $stream;
     }
@@ -148,5 +175,43 @@ class Filesystem
         }
 
         return $this->localFilesystem;
+    }
+
+    /**
+     * @param FileId $fileId
+     * @param StreamInterface $stream
+     */
+    private function cacheStore(FileId $fileId, StreamInterface $stream)
+    {
+        // Bigger than 10MB? Don't cache
+        if ($stream->getSize() > 1024 * 1024 * 10) {
+            return;
+        }
+
+        $item = $this->cache->getItem('files.' . $fileId);
+
+        if (!$this->cache->has($item->getKey())) {
+            $item->set($stream->getContents());
+        }
+
+        $item->expiresAfter(strtotime('5 minutes'));
+        $this->cache->save($item);
+    }
+
+    /**
+     * @param FileId $fileId
+     * @return StreamInterface|null
+     */
+    private function cacheGet(FileId $fileId): ?StreamInterface
+    {
+        $item = $this->cache->getItem('files.' . $fileId);
+
+        if (!$this->cache->has($item->getKey())) {
+            return null;
+        }
+
+        $tmp = tmpfile();
+        fwrite($tmp, $item->get());
+        return new Stream($tmp);
     }
 }
